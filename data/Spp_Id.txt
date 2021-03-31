@@ -1,0 +1,2332 @@
+
+
+ID	SPPname
+
+B1	Gavia_stellata
+
+B10	Fulmarus_glacialis
+
+B100	Accipiter_brevipes
+
+B101	Accipiter_nisus
+
+B102	Accipiter_gentilis
+
+B103	Buteo_buteo
+
+B104	Buteo_rufinus
+
+B105	Buteo_lagopus
+
+B106	Aquila_pomarina
+
+B107	Aquila_clanga
+
+B108	Aquila_nipalensis
+
+B109	Aquila_adalberti
+
+B11	Pterodroma_deserta
+
+B110	Aquila_heliaca
+
+B111	Aquila_chrysaetos
+
+B112	Hieraaetus_fasciatus
+
+B113	Hieraaetus_pennatus
+
+B114	Falco_naumanni
+
+B115	Falco_tinnunculus
+
+B116	Falco_vespertinus
+
+B117	Falco_eleonorae
+
+B118	Falco_columbarius
+
+B119	Falco_subbuteo
+
+B12	Pterodroma_madeira
+
+B120	Falco_biarmicus
+
+B121	Falco_cherrug
+
+B122	Falco_rusticolus
+
+B123	Falco_peregrinus
+
+B124	Lagopus_lagopus
+
+B125	Lagopus_muta
+
+B126	Tetrao_urogallus
+
+B127	Tetrao_tetrix
+
+B128	Tetrao_mlokosiewiczi
+
+B129	Bonasa_bonasia
+
+B13	Bulweria_bulwerii
+
+B130	Tetraogallus_caucasicus
+
+B131	Tetraogallus_caspius
+
+B132	Alectoris_graeca
+
+B133	Alectoris_chukar
+
+B134	Alectoris_barbara
+
+B135	Alectoris_rufa
+
+B136	Ammoperdix_griseogularis
+
+B137	Francolinus_francolinus
+
+B138	Perdix_perdix
+
+B139	Coturnix_coturnix
+
+B14	Calonectris_diomedea
+
+B140	Phasianus_colchicus
+
+B141	Turnix_sylvatica
+
+B142	Anthropoides_virgo
+
+B143	Grus_grus
+
+B144	Rallus_aquaticus
+
+B145	Crex_crex
+
+B146	Porzana_parva
+
+B147	Porzana_pusilla
+
+B148	Porzana_porzana
+
+B149	Porphyrio_porphyrio
+
+B15	Puffinus_puffinus
+
+B150	Gallinula_chloropus
+
+B151	Fulica_cristata
+
+B152	Fulica_atra
+
+B153	Otis_tarda
+
+B154	Tetrax_tetrax
+
+B155	Haematopus_ostralegus
+
+B156	Himantopus_himantopus
+
+B157	Recurvirostra_avosetta
+
+B158	Burhinus_oedicnemus
+
+B159	Glareola_pratincola
+
+B16	Puffinus_yelkouan
+
+B160	Glareola_nordmanni
+
+B161	Vanellus_vanellus
+
+B162	Hoplopterus_spinosus
+
+B163	Hoplopterus_indicus
+
+B164	Chettusia_gregaria
+
+B165	Chettusia_leucura
+
+B166	Pluvialis_apricaria
+
+B167	Pluvialis_squatarola
+
+B168	Charadrius_hiaticula
+
+B169	Charadrius_dubius
+
+B17	Puffinus_mauretanicus
+
+B170	Charadrius_alexandrinus
+
+B171	Charadrius_leschenaultii
+
+B172	Charadrius_asiaticus
+
+B173	Charadrius_morinellus
+
+B174	Scolopax_rusticola
+
+B175	Lymnocryptes_minimus
+
+B176	Gallinago_stenura
+
+B177	Gallinago_media
+
+B178	Gallinago_gallinago
+
+B179	Limosa_limosa
+
+B18	Puffinus_assimilis
+
+B180	Limosa_lapponica
+
+B181	Numenius_phaeopus
+
+B182	Numenius_arquata
+
+B183	Tringa_erythropus
+
+B184	Tringa_totanus
+
+B185	Tringa_stagnatilis
+
+B186	Tringa_nebularia
+
+B187	Tringa_ochropus
+
+B188	Tringa_glareola
+
+B189	Xenus_cinereus
+
+B19	Pelagodroma_marina
+
+B190	Actitis_hypoleucos
+
+B191	Arenaria_interpres
+
+B192	Calidris_canutus
+
+B193	Calidris_alba
+
+B194	Calidris_minuta
+
+B195	Calidris_temminckii
+
+B196	Calidris_melanotos
+
+B197	Calidris_alpina
+
+B198	Calidris_maritima
+
+B199	Limicola_falcinellus
+
+B2	Gavia_arctica
+
+B20	Hydrobates_pelagicus
+
+B200	Philomachus_pugnax
+
+B201	Phalaropus_lobatus
+
+B202	Phalaropus_fulicarius
+
+B203	Stercorarius_skua
+
+B204	Stercorarius_pomarinus
+
+B205	Stercorarius_parasiticus
+
+B206	Stercorarius_longicaudus
+
+B207	Larus_canus
+
+B208	Larus_audouinii
+
+B209	Larus_marinus
+
+B21	Oceanodroma_leucorhoa
+
+B210	Larus_hyperboreus
+
+B211	Larus_glaucoides
+
+B212	Larus_argentatus
+
+B213	Larus_fuscus
+
+B214	Larus_cachinnans
+
+B215	Larus_armenicus
+
+B216	Larus_ichthyaetus
+
+B217	Larus_ridibundus
+
+B218	Larus_genei
+
+B219	Larus_melanocephalus
+
+B22	Oceanodroma_castro
+
+B220	Larus_minutus
+
+B221	Pagophila_eburnea
+
+B222	Larus_sabini
+
+B223	Rissa_tridactyla
+
+B224	Gelochelidon_nilotica
+
+B225	Sterna_caspia
+
+B226	Sterna_bengalensis
+
+B227	Sterna_sandvicensis
+
+B228	Sterna_dougallii
+
+B229	Sterna_hirundo
+
+B23	Phaethon_aethereus
+
+B230	Sterna_paradisaea
+
+B231	Sterna_albifrons
+
+B232	Sterna_fuscata
+
+B233	Chlidonias_hybrida
+
+B234	Chlidonias_leucopterus
+
+B235	Chlidonias_niger
+
+B236	Alle_alle
+
+B237	Uria_aalge
+
+B238	Uria_lomvia
+
+B239	Alca_torda
+
+B24	Morus_bassanus
+
+B240	Cepphus_grylle
+
+B241	Fratercula_arctica
+
+B242	Pterocles_alchata
+
+B243	Pterocles_orientalis
+
+B244	Columba_livia
+
+B245	Columba_oenas
+
+B246	Columba_palumbus
+
+B247	Columba_trocaz
+
+B248	Streptopelia_turtur
+
+B249	Streptopelia_decaocto
+
+B25	Phalacrocorax_carbo
+
+B250	Streptopelia_senegalensis
+
+B251	Clamator_glandarius
+
+B252	Cuculus_canorus
+
+B253	Cuculus_saturatus
+
+B254	Tyto_alba
+
+B255	Otus_brucei
+
+B256	Otus_scops
+
+B257	Bubo_bubo
+
+B258	Nyctea_scandiaca
+
+B259	Strix_aluco
+
+B26	Phalacrocorax_aristotelis
+
+B260	Strix_uralensis
+
+B261	Strix_nebulosa
+
+B262	Surnia_ulula
+
+B263	Glaucidium_passerinum
+
+B264	Athene_noctua
+
+B265	Aegolius_funereus
+
+B266	Asio_otus
+
+B267	Asio_flammeus
+
+B268	Caprimulgus_ruficollis
+
+B269	Caprimulgus_europaeus
+
+B27	Phalacrocorax_pygmaeus
+
+B270	Apus_melba
+
+B271	Apus_apus
+
+B272	Apus_unicolor
+
+B273	Apus_pallidus
+
+B274	Apus_affinis
+
+B275	Apus_caffer
+
+B276	Alcedo_atthis
+
+B277	Halcyon_smyrnensis
+
+B278	Ceryle_rudis
+
+B279	Merops_superciliosus
+
+B28	Pelecanus_onocrotalus
+
+B280	Merops_apiaster
+
+B281	Coracias_garrulus
+
+B282	Upupa_epops
+
+B283	Jynx_torquilla
+
+B284	Dendrocopos_minor
+
+B285	Dendrocopos_medius
+
+B286	Dendrocopos_leucotos
+
+B287	Dendrocopos_major
+
+B288	Dendrocopos_syriacus
+
+B289	Picoides_tridactylus
+
+B29	Pelecanus_crispus
+
+B290	Dryocopus_martius
+
+B291	Picus_viridis
+
+B292	Picus_canus
+
+B293	Ammomanes_deserti
+
+B294	Melanocorypha_calandra
+
+B295	Melanocorypha_bimaculata
+
+B296	Melanocorypha_leucoptera
+
+B297	Calandrella_brachydactyla
+
+B298	Calandrella_rufescens
+
+B299	Calandrella_cheleensis
+
+B3	Gavia_immer
+
+B30	Ardea_cinerea
+
+B300	Chersophilus_duponti
+
+B301	Galerida_cristata
+
+B302	Lullula_arborea
+
+B303	Alauda_arvensis
+
+B304	Eremophila_alpestris
+
+B305	Riparia_riparia
+
+B306	Ptyonoprogne_rupestris
+
+B307	Hirundo_rustica
+
+B308	Hirundo_daurica
+
+B309	Delichon_urbicum
+
+B31	Ardea_purpurea
+
+B310	Motacilla_alba
+
+B311	Motacilla_citreola
+
+B312	Motacilla_flava
+
+B313	Motacilla_cinerea
+
+B314	Anthus_campestris
+
+B315	Anthus_berthelotii
+
+B316	Anthus_trivialis
+
+B317	Anthus_hodgsoni
+
+B318	Anthus_pratensis
+
+B319	Anthus_cervinus
+
+B32	Egretta_alba
+
+B320	Anthus_petrosus
+
+B321	Anthus_spinoletta
+
+B322	Pycnonotus_xanthopygos
+
+B323	Regulus_regulus
+
+B324	Regulus_ignicapillus
+
+B325	Bombycilla_garrulus
+
+B326	Cinclus_cinclus
+
+B327	Troglodytes_troglodytes
+
+B328	Prunella_collaris
+
+B329	Prunella_montanella
+
+B33	Egretta_garzetta
+
+B330	Prunella_ocularis
+
+B331	Prunella_atrogularis
+
+B332	Prunella_modularis
+
+B333	Monticola_saxatilis
+
+B334	Monticola_solitarius
+
+B335	Zoothera_dauma
+
+B336	Turdus_torquatus
+
+B337	Turdus_merula
+
+B338	Turdus_ruficollis
+
+B339	Turdus_pilaris
+
+B34	Ardeola_ralloides
+
+B340	Turdus_iliacus
+
+B341	Turdus_philomelos
+
+B342	Turdus_viscivorus
+
+B343	Cisticola_juncidis
+
+B344	Prinia_gracilis
+
+B345	Cettia_cetti
+
+B346	Locustella_lanceolata
+
+B347	Locustella_naevia
+
+B348	Locustella_fluviatilis
+
+B349	Locustella_luscinioides
+
+B35	Bubulcus_ibis
+
+B350	Acrocephalus_melanopogon
+
+B351	Acrocephalus_paludicola
+
+B352	Acrocephalus_schoenobaenus
+
+B353	Acrocephalus_agricola
+
+B354	Acrocephalus_scirpaceus
+
+B355	Acrocephalus_dumetorum
+
+B356	Acrocephalus_palustris
+
+B357	Acrocephalus_arundinaceus
+
+B358	Hippolais_caligata
+
+B359	Hippolais_pallida
+
+B36	Nycticorax_nycticorax
+
+B360	Hippolais_languida
+
+B361	Hippolais_olivetorum
+
+B362	Hippolais_polyglotta
+
+B363	Hippolais_icterina
+
+B364	Phylloscopus_trochilus
+
+B365	Phylloscopus_collybita
+
+B366	Phylloscopus_sindianus
+
+B367	Phylloscopus_bonelli
+
+B368	Phylloscopus_sibilatrix
+
+B369	Phylloscopus_inornatus
+
+B37	Ixobrychus_minutus
+
+B370	Phylloscopus_borealis
+
+B371	Phylloscopus_trochiloides
+
+B372	Sylvia_atricapilla
+
+B373	Sylvia_borin
+
+B374	Sylvia_communis
+
+B375	Sylvia_curruca
+
+B376	Sylvia_nisoria
+
+B377	Sylvia_hortensis
+
+B378	Sylvia_rueppelli
+
+B379	Sylvia_cantillans
+
+B38	Botaurus_stellaris
+
+B380	Sylvia_melanocephala
+
+B381	Sylvia_melanothorax
+
+B382	Sylvia_mystacea
+
+B383	Sylvia_conspicillata
+
+B384	Sylvia_undata
+
+B385	Sylvia_sarda
+
+B386	Muscicapa_striata
+
+B387	Ficedula_hypoleuca
+
+B388	Ficedula_albicollis
+
+B389	Ficedula_semitorquata
+
+B39	Ciconia_nigra
+
+B390	Ficedula_parva
+
+B391	Erithacus_rubecula
+
+B392	Luscinia_luscinia
+
+B393	Luscinia_megarhynchos
+
+B394	Luscinia_calliope
+
+B395	Luscinia_svecica
+
+B396	Tarsiger_cyanurus
+
+B397	Irania_gutturalis
+
+B398	Cercotrichas_galactotes
+
+B399	Phoenicurus_ochruros
+
+B4	Gavia_adamsii
+
+B40	Ciconia_ciconia
+
+B400	Phoenicurus_phoenicurus
+
+B401	Saxicola_rubetra
+
+B402	Saxicola_torquata
+
+B403	Oenanthe_leucura
+
+B404	Oenanthe_oenanthe
+
+B405	Oenanthe_finschii
+
+B406	Oenanthe_pleschanka
+
+B407	Oenanthe_hispanica
+
+B408	Oenanthe_chrysopygia
+
+B409	Oenanthe_deserti
+
+B41	Plegadis_falcinellus
+
+B410	Oenanthe_cypriaca
+
+B411	Oenanthe_isabellina
+
+B412	Panurus_biarmicus
+
+B413	Aegithalos_caudatus
+
+B414	Parus_lugubris
+
+B415	Parus_palustris
+
+B416	Parus_montanus
+
+B417	Parus_cinctus
+
+B418	Parus_ater
+
+B419	Parus_cristatus
+
+B42	Platalea_leucorodia
+
+B420	Parus_major
+
+B421	Parus_caeruleus
+
+B422	Parus_cyanus
+
+B423	Sitta_europaea
+
+B424	Sitta_whiteheadi
+
+B425	Sitta_krueperi
+
+B426	Sitta_neumayer
+
+B427	Sitta_tephronota
+
+B428	Tichodroma_muraria
+
+B429	Certhia_familiaris
+
+B43	Phoenicopterus_roseus
+
+B430	Certhia_brachydactyla
+
+B431	Remiz_pendulinus
+
+B432	Oriolus_oriolus
+
+B433	Lanius_collurio
+
+B434	Lanius_excubitor
+
+B435	Lanius_meridionalis
+
+B436	Lanius_minor
+
+B437	Lanius_nubicus
+
+B438	Lanius_senator
+
+B439	Perisoreus_infaustus
+
+B44	Cygnus_olor
+
+B440	Garrulus_glandarius
+
+B441	Cyanopica_cyanus
+
+B442	Pica_pica
+
+B443	Nucifraga_caryocatactes
+
+B444	Pyrrhocorax_pyrrhocorax
+
+B445	Pyrrhocorax_graculus
+
+B446	Corvus_monedula
+
+B447	Corvus_frugilegus
+
+B448	Corvus_corone
+
+B449	Corvus_corax
+
+B45	Cygnus_cygnus
+
+B450	Sturnus_roseus
+
+B451	Sturnus_vulgaris
+
+B452	Sturnus_unicolor
+
+B453	Emberiza_citrinella
+
+B454	Emberiza_leucocephalos
+
+B455	Emberiza_cirlus
+
+B456	Emberiza_cia
+
+B457	Emberiza_buchanani
+
+B458	Emberiza_cineracea
+
+B459	Emberiza_hortulana
+
+B46	Cygnus_columbianus
+
+B460	Emberiza_caesia
+
+B461	Emberiza_pusilla
+
+B462	Emberiza_rustica
+
+B463	Emberiza_aureola
+
+B464	Emberiza_melanocephala
+
+B465	Emberiza_bruniceps
+
+B466	Emberiza_pallasi
+
+B467	Emberiza_schoeniclus
+
+B468	Miliaria_calandra
+
+B469	Calcarius_lapponicus
+
+B47	Anser_fabalis
+
+B470	Plectrophenax_nivalis
+
+B471	Fringilla_coelebs
+
+B472	Fringilla_montifringilla
+
+B473	Pinicola_enucleator
+
+B474	Carpodacus_erythrinus
+
+B475	Carpodacus_rubicilla
+
+B476	Loxia_pytyopsittacus
+
+B477	Loxia_scotica
+
+B478	Loxia_curvirostra
+
+B479	Loxia_leucoptera
+
+B48	Anser_brachyrhynchus
+
+B480	Carduelis_chloris
+
+B481	Carduelis_flammea
+
+B482	Carduelis_hornemanni
+
+B483	Carduelis_spinus
+
+B484	Carduelis_carduelis
+
+B485	Carduelis_flavirostris
+
+B486	Carduelis_cannabina
+
+B487	Serinus_pusillus
+
+B488	Serinus_serinus
+
+B489	Serinus_canaria
+
+B49	Anser_albifrons
+
+B490	Serinus_citrinella
+
+B491	Pyrrhula_pyrrhula
+
+B492	Pyrrhula_murina
+
+B493	Coccothraustes_coccothraustes
+
+B494	Rhodopechys_sanguinea
+
+B495	Bucanetes_githagineus
+
+B496	Bucanetes_mongolicus
+
+B497	Rhodospiza_obsoleta
+
+B498	Passer_italiae
+
+B499	Passer_domesticus
+
+B5	Tachybaptus_ruficollis
+
+B50	Anser_erythropus
+
+B500	Passer_hispaniolensis
+
+B501	Passer_moabiticus
+
+B502	Passer_montanus
+
+B503	Gymnoris_xanthocollis
+
+B504	Petronia_petronia
+
+B505	Petronia_brachydactyla
+
+B506	Montifringilla_nivalis
+
+B507	Galerida_theklae
+
+B508	Columba_bollii
+
+B509	Columba_junoniae
+
+B51	Anser_anser
+
+B510	Fringilla_teydea
+
+B513	Saxicola_dacotiae
+
+B514	Vanellus_gregarius
+
+B515	Chlamydotis_undulata
+
+B516	Cursorius_cursor
+
+B517	Phylloscopus_ibericus
+
+B518	Sylvia_albistriata
+
+B519	Sylvia_subalpina
+
+B520	Sylvia_inornata
+
+B521	Phylloscopus_orientalis
+
+B522	Regulus_madeirensis
+
+B523	Serinus_corsicana
+
+B524	Corvus_cornix
+
+B525	Chlamydotis_macqueenii
+
+B526	Phylloscopus_canariensis
+
+B53	Branta_leucopsis
+
+B54	Branta_bernicla
+
+B56	Tadorna_ferruginea
+
+B57	Tadorna_tadorna
+
+B58	Anas_penelope
+
+B59	Anas_strepera
+
+B6	Podiceps_cristatus
+
+B60	Anas_crecca
+
+B61	Anas_platyrhynchos
+
+B62	Anas_acuta
+
+B63	Anas_querquedula
+
+B64	Anas_clypeata
+
+B65	Marmaronetta_angustirostris
+
+B66	Netta_rufina
+
+B67	Aythya_ferina
+
+B68	Aythya_nyroca
+
+B69	Aythya_fuligula
+
+B7	Podiceps_grisegena
+
+B70	Aythya_marila
+
+B71	Somateria_mollissima
+
+B72	Somateria_spectabilis
+
+B73	Polysticta_stelleri
+
+B74	Histrionicus_histrionicus
+
+B75	Clangula_hyemalis
+
+B76	Melanitta_nigra
+
+B77	Melanitta_fusca
+
+B78	Bucephala_clangula
+
+B79	Bucephala_islandica
+
+B8	Podiceps_auritus
+
+B80	Mergellus_albellus
+
+B81	Mergus_serrator
+
+B82	Mergus_merganser
+
+B84	Oxyura_leucocephala
+
+B85	Pandion_haliaetus
+
+B86	Pernis_apivorus
+
+B87	Elanus_caeruleus
+
+B88	Milvus_milvus
+
+B89	Milvus_migrans
+
+B9	Podiceps_nigricollis
+
+B90	Haliaeetus_albicilla
+
+B91	Gypaetus_barbatus
+
+B92	Neophron_percnopterus
+
+B93	Gyps_fulvus
+
+B94	Aegypius_monachus
+
+B95	Circaetus_gallicus
+
+B96	Circus_aeruginosus
+
+B97	Circus_cyaneus
+
+B98	Circus_macrourus
+
+B99	Circus_pygargus
+
+M1	Acomys_cilicicus
+
+M10	Allocricetulus_eversmanni
+
+M100	Lepus_granatensis
+
+M101	Lepus_timidus
+
+M102	Lepus_tolai
+
+M103	Lutra_lutra
+
+M104	Lynx_lynx
+
+M105	Lynx_pardinus
+
+M107	Marmota_baibacina
+
+M108	Marmota_bobak
+
+M109	Marmota_marmota
+
+M11	Alopex_lagopus
+
+M110	Martes_foina
+
+M111	Martes_martes
+
+M112	Martes_zibellina
+
+M113	Meles_leucurus
+
+M114	Meles_meles
+
+M115	Meriones_crassus
+
+M116	Meriones_dahli
+
+M117	Meriones_libycus
+
+M118	Meriones_meridianus
+
+M119	Meriones_persicus
+
+M12	Apodemus_agrarius
+
+M120	Meriones_tamariscinus
+
+M121	Meriones_tristrami
+
+M122	Meriones_vinogradovi
+
+M123	Mesocricetus_auratus
+
+M124	Mesocricetus_brandti
+
+M125	Mesocricetus_newtoni
+
+M126	Mesocricetus_raddei
+
+M127	Micromys_minutus
+
+M128	Microtus_agrestis
+
+M129	Microtus_anatolicus
+
+M13	Apodemus_alpicola
+
+M130	Microtus_arvalis
+
+M131	Microtus_bavaricus
+
+M132	Microtus_brachycercus
+
+M133	Microtus_cabrerae
+
+M134	Microtus_daghestanicus
+
+M135	Microtus_dogramacii
+
+M136	Microtus_duodecimcostatus
+
+M137	Microtus_felteni
+
+M138	Microtus_gerbei
+
+M139	Microtus_gregalis
+
+M14	Apodemus_epimelas
+
+M140	Microtus_guentheri
+
+M141	Microtus_levis
+
+M142	Microtus_liechtesteini
+
+M143	Microtus_lusitanicus
+
+M144	Microtus_majori
+
+M145	Microtus_middendorffii
+
+M146	Microtus_multiplex
+
+M147	Microtus_nasarovi
+
+M148	Microtus_oeconomus
+
+M149	Microtus_savii
+
+M15	Apodemus_flavicollis
+
+M150	Microtus_schidlovskii
+
+M151	Microtus_socialis
+
+M152	Microtus_subterraneus
+
+M153	Microtus_tatricus
+
+M154	Microtus_thomasi
+
+M155	Miniopterus_fuliginosus
+
+M156	Miniopterus_schreibersii
+
+M157	Mus_cypriacus
+
+M158	Mus_macedonicus
+
+M159	Mus_musculus
+
+M16	Apodemus_hyrcanicus
+
+M160	Mus_spicilegus
+
+M161	Mus_spretus
+
+M162	Muscardinus_avellanarius
+
+M163	Mustela_erminea
+
+M164	Mustela_eversmanii
+
+M165	Mustela_lutreola
+
+M166	Mustela_nivalis
+
+M167	Mustela_putorius
+
+M168	Mustela_sibirica
+
+M169	Myodes_glareolus
+
+M17	Apodemus_mystacinus
+
+M170	Myodes_rufocanus
+
+M171	Myodes_rutilus
+
+M172	Myomimus_roachi
+
+M173	Myomimus_setzeri
+
+M174	Myopus_schisticolor
+
+M175	Myotis_alcathoe
+
+M176	Myotis_aurascens
+
+M177	Myotis_bechsteinii
+
+M178	Myotis_blythii
+
+M179	Myotis_brandtii
+
+M18	Apodemus_ponticus
+
+M180	Myotis_capaccinii
+
+M181	Myotis_dasycneme
+
+M182	Myotis_daubentonii
+
+M183	Myotis_emarginatus
+
+M184	Myotis_hajastanicus
+
+M185	Myotis_myotis
+
+M186	Myotis_mystacinus
+
+M187	Myotis_nattereri
+
+M188	Myotis_nipalensis
+
+M189	Myotis_punicus
+
+M19	Apodemus_sylvaticus
+
+M190	Myotis_schaubi
+
+M191	Neomys_anomalus
+
+M192	Neomys_fodiens
+
+M193	Neomys_teres
+
+M195	Nyctalus_azoreum
+
+M196	Nyctalus_lasiopterus
+
+M197	Nyctalus_leisleri
+
+M198	Nyctalus_noctula
+
+M199	Ochotona_hyperborea
+
+M2	Acomys_minous
+
+M20	Apodemus_uralensis
+
+M200	Ochotona_pusilla
+
+M201	Oryctolagus_cuniculus
+
+M202	Otocolobus_manul
+
+M203	Ovis_aries
+
+M204	Ovis_orientalis
+
+M205	Panthera_pardus
+
+M206	Pipistrellus_kuhlii
+
+M207	Pipistrellus_maderensis
+
+M208	Pipistrellus_nathusii
+
+M209	Pipistrellus_pipistrellus
+
+M21	Apodemus_witherbyi
+
+M210	Pipistrellus_pygmaeus
+
+M211	Plecotus_auritus
+
+M212	Plecotus_austriacus
+
+M213	Plecotus_kolombatovici
+
+M214	Plecotus_macrobullaris
+
+M215	Plecotus_sardus
+
+M216	Plecotus_teneriffae
+
+M217	Prometheomys_schaposchnikowi
+
+M218	Pteromys_volans
+
+M219	Pygeretmus_platyurus
+
+M22	Arvicola_amphibius
+
+M220	Pygeretmus_pumilio
+
+M221	Rangifer_tarandus
+
+M224	Rhinolophus_blasii
+
+M225	Rhinolophus_euryale
+
+M226	Rhinolophus_ferrumequinum
+
+M227	Rhinolophus_hipposideros
+
+M228	Rhinolophus_mehelyi
+
+M229	Rhombomys_opimus
+
+M23	Arvicola_sapidus
+
+M230	Rousettus_aegyptiacus
+
+M231	Rupicapra_pyrenaica
+
+M232	Rupicapra_rupicapra
+
+M233	Saiga_tatarica
+
+M234	Sciurus_anomalus
+
+M235	Sciurus_vulgaris
+
+M236	Sicista_armenica
+
+M237	Sicista_betulina
+
+M238	Sicista_caucasica
+
+M239	Sicista_kazbegica
+
+M24	Arvicola_scherman
+
+M240	Sicista_kluchorica
+
+M241	Sicista_severtzovi
+
+M242	Sicista_strandi
+
+M243	Sicista_subtilis
+
+M244	Sorex_alpinus
+
+M245	Sorex_antinorii
+
+M246	Sorex_araneus
+
+M248	Sorex_caecutiens
+
+M249	Sorex_coronatus
+
+M25	Atelerix_algirus
+
+M250	Sorex_granarius
+
+M251	Sorex_isodon
+
+M252	Sorex_minutissimus
+
+M253	Sorex_minutus
+
+M254	Sorex_raddei
+
+M255	Sorex_samniticus
+
+M256	Sorex_satunini
+
+M257	Sorex_tundrensis
+
+M258	Sorex_volnuchini
+
+M259	Spalax_arenarius
+
+M26	Barbastella_barbastellus
+
+M260	Spalax_ehrenbergi
+
+M261	Spalax_giganteus
+
+M262	Spalax_graecus
+
+M263	Spalax_leucodon
+
+M264	Spalax_microphthalmus
+
+M265	Spalax_nehringi
+
+M266	Spalax_uralensis
+
+M267	Spalax_zemni
+
+M268	Spermophilus_citellus
+
+M269	Spermophilus_fulvus
+
+M27	Barbastella_leucomelas
+
+M270	Spermophilus_major
+
+M271	Spermophilus_musicus
+
+M272	Spermophilus_pygmaeus
+
+M273	Spermophilus_suslicus
+
+M274	Spermophilus_taurensis
+
+M275	Spermophilus_xanthoprymnus
+
+M276	Stylodipus_telum
+
+M277	Suncus_etruscus
+
+M278	Sus_scrofa
+
+M279	Tadarida_teniotis
+
+M28	Bison_bonasus
+
+M280	Talpa_caeca
+
+M281	Talpa_caucasica
+
+M282	Talpa_davidiana
+
+M283	Talpa_europaea
+
+M284	Talpa_levantis
+
+M285	Talpa_occidentalis
+
+M286	Talpa_romana
+
+M287	Talpa_stankovici
+
+M288	Tamias_sibiricus
+
+M289	Tatera_indica
+
+M29	Calomyscus_urartensis
+
+M290	Ursus_arctos
+
+M291	Ursus_maritimus
+
+M292	Vespertilio_murinus
+
+M293	Vormela_peregusna
+
+M294	Vulpes_corsac
+
+M295	Vulpes_vulpes
+
+M3	Acomys_nesiotes
+
+M30	Canis_aureus
+
+M31	Canis_lupus
+
+M32	Capra_aegagrus
+
+M33	Capra_caucasica
+
+M34	Capra_cylindricornis
+
+M36	Capra_ibex
+
+M37	Capra_pyrenaica
+
+M38	Capreolus_capreolus
+
+M39	Capreolus_pygargus
+
+M4	Alces_alces
+
+M40	Castor_fiber
+
+M41	Cervus_elaphus
+
+M42	Chionomys_gud
+
+M43	Chionomys_nivalis
+
+M44	Chionomys_roberti
+
+M45	Cricetulus_migratorius
+
+M46	Cricetus_cricetus
+
+M47	Crocidura_arispa
+
+M48	Crocidura_armenica
+
+M49	Crocidura_canariensis
+
+M5	Allactaga_elater
+
+M50	Crocidura_caspica
+
+M52	Crocidura_leucodon
+
+M53	Crocidura_pachyura
+
+M54	Crocidura_russula
+
+M55	Crocidura_serezkyensis
+
+M56	Crocidura_sicula
+
+M57	Crocidura_suaveolens
+
+M58	Crocidura_zimmermanni
+
+M59	Dama_dama
+
+M6	Allactaga_euphratica
+
+M60	Desmana_moschata
+
+M61	Dicrostonyx_torquatus
+
+M62	Dinaromys_bogdanovi
+
+M63	Diplomesodon_pulchellum
+
+M64	Dipus_sagitta
+
+M65	Dryomys_laniger
+
+M66	Dryomys_nitedula
+
+M67	Eliomys_melanurus
+
+M68	Eliomys_quercinus
+
+M69	Ellobius_lutescens
+
+M7	Allactaga_major
+
+M70	Ellobius_talpinus
+
+M71	Eptesicus_bobrinskoi
+
+M72	Eptesicus_bottae
+
+M73	Eptesicus_nilssonii
+
+M74	Eptesicus_serotinus
+
+M75	Erinaceus_concolor
+
+M76	Erinaceus_europaeus
+
+M77	Erinaceus_roumanicus
+
+M78	Felis_chaus
+
+M79	Felis_margarita
+
+M8	Allactaga_sibirica
+
+M80	Felis_silvestris
+
+M81	Galemys_pyrenaicus
+
+M82	Gazella_subgutturosa
+
+M83	Genetta_genetta
+
+M84	Gerbillus_dasyurus
+
+M85	Glis_glis
+
+M86	Gulo_gulo
+
+M87	Hemiechinus_auritus
+
+M88	Herpestes_ichneumon
+
+M89	Hyaena_hyaena
+
+M9	Allactaga_williamsi
+
+M90	Pipistrellus_savii
+
+M91	Hystrix_cristata
+
+M92	Hystrix_indica
+
+M93	Lagurus_lagurus
+
+M94	Lemmus_lemmus
+
+M95	Lemmus_sibiricus
+
+M96	Lepus_capensis
+
+M97	Lepus_castroviejoi
+
+M98	Lepus_corsicanus
+
+M99	Lepus_europaeus
+
+A1	Alytes_cisternasii
+
+A10	Bufo_verrucosissimus
+
+A100	Pseudepidalea_balearica
+
+A101	Pseudepidalea_boulengeri
+
+A102	Pseudepidalea_sicula
+
+A103	Pseudepidalea_variabilis
+
+A104	Triturus_macedonicus
+
+A11	Pseudepidalea_viridis
+
+A12	Chioglossa_lusitanica
+
+A13	Discoglossus_galganoi
+
+A14	Discoglossus_jeanneae
+
+A15	Discoglossus_montalentii
+
+A16	Discoglossus_pictus
+
+A17	Discoglossus_sardus
+
+A18	Calotriton_asper
+
+A19	Euproctus_montanus
+
+A2	Alytes_dickhilleni
+
+A20	Euproctus_platycephalus
+
+A21	Hyla_arborea
+
+A22	Hyla_intermedia
+
+A23	Hyla_meridionalis
+
+A24	Hyla_sarda
+
+A25	Hyla_savignyi
+
+A26	Lyciasalamandra_antalyana
+
+A27	Lyciasalamandra_atifi
+
+A28	Lyciasalamandra_billae
+
+A29	Lyciasalamandra_fazilae
+
+A3	Alytes_muletensis
+
+A30	Lyciasalamandra_flavimembris
+
+A31	Lyciasalamandra_helverseni
+
+A32	Lyciasalamandra_luschani
+
+A33	Mertensiella_caucasica
+
+A34	Neurergus_crocatus
+
+A35	Neurergus_strauchii
+
+A36	Pelobates_cultripes
+
+A37	Pelobates_fuscus
+
+A38	Pelobates_syriacus
+
+A39	Pelodytes_caucasicus
+
+A4	Alytes_obstetricans
+
+A40	Pelodytes_ibericus
+
+A41	Pelodytes_punctatus
+
+A42	Pleurodeles_waltl
+
+A43	Proteus_anguinus
+
+A44	Rana_arvalis
+
+A45	Pelophylax_bedriagae
+
+A46	Pelophylax_bergeri
+
+A47	Pelophylax_cerigensis
+
+A48	Pelophylax_cretensis
+
+A49	Rana_dalmatina
+
+A5	Bombina_bombina
+
+A50	Pelophylax_epeiroticus
+
+A51	Pelophylax_esculentus
+
+A52	Rana_graeca
+
+A53	Pelophylax_grafi
+
+A54	Pelophylax_hispanicus
+
+A55	Rana_iberica
+
+A56	Rana_italica
+
+A57	Pelophylax_kurtmuelleri
+
+A58	Rana_latastei
+
+A59	Pelophylax_lessonae
+
+A6	Bombina_pachypus
+
+A60	Rana_macrocnemis
+
+A61	Pelophylax_perezi
+
+A62	Rana_pyrenaica
+
+A63	Pelophylax_ridibundus
+
+A64	Pelophylax_shqipericus
+
+A65	Rana_tavasensis
+
+A66	Rana_temporaria
+
+A67	Salamandra_atra
+
+A68	Salamandra_corsica
+
+A69	Salamandra_infraimmaculata
+
+A7	Bombina_variegata
+
+A70	Salamandra_lanzai
+
+A71	Salamandra_salamandra
+
+A72	Salamandrella_keyserlingii
+
+A73	Salamandrina_perspicillata
+
+A74	Salamandrina_terdigitata
+
+A75	Speleomantes_ambrosii
+
+A76	Speleomantes_flavus
+
+A77	Atylodes_genei
+
+A78	Speleomantes_imperialis
+
+A79	Speleomantes_italicus
+
+A8	Bufo_bufo
+
+A80	Speleomantes_sarrabusensis
+
+A81	Speleomantes_strinatii
+
+A82	Speleomantes_supramontis
+
+A83	Mesotriton_alpestris
+
+A84	Lissotriton_boscai
+
+A85	Triturus_carnifex
+
+A86	Triturus_cristatus
+
+A87	Triturus_dobrogicus
+
+A88	Lissotriton_helveticus
+
+A89	Lissotriton_italicus
+
+A9	Epidalea_calamita
+
+A90	Triturus_karelinii
+
+A91	Triturus_marmoratus
+
+A92	Lissotriton_montandoni
+
+A93	Triturus_pygmaeus
+
+A94	Ommatotriton_vittatus
+
+A95	Lissotriton_vulgaris
+
+A96	Pelophylax_caralitanus
+
+A97	Ommatotriton_ophryticus
+
+A98	Rana_holtzi
+
+A99	Calotriton_arnoldi
+
+R1	Ablepharus_bivittatus
+
+R10	Algyroides_moreoticus
+
+R100	Gloydius_intermedius
+
+R101	Hellenolacerta_graeca
+
+R102	Hemidactylus_turcicus
+
+R103	Hemorrhois_hippocrepis
+
+R104	Dolichophis_cypriensis
+
+R105	Hierophis_gemonensis
+
+R106	Hierophis_viridiflavus
+
+R107	Iberolacerta_aranica
+
+R108	Iberolacerta_aurelioi
+
+R109	Iberolacerta_bonnali
+
+R11	Algyroides_nigropunctatus
+
+R110	Iberolacerta_cyreni
+
+R111	Iberolacerta_galani
+
+R112	Iberolacerta_horvathi
+
+R113	Iberolacerta_martinezricai
+
+R114	Iberolacerta_monticola
+
+R115	Lacerta_agilis
+
+R116	Anatolacerta_anatolica
+
+R117	Lacerta_bilineata
+
+R118	Apathya_cappadocica
+
+R119	Phoenicolacerta_cyanisparsa
+
+R12	Alsophylax_pipiens
+
+R120	Anatolacerta_danfordi
+
+R121	Teira_dugesii
+
+R122	Phoenicolacerta_laevis
+
+R123	Timon_lepidus
+
+R124	Lacerta_media
+
+R125	Dinarolacerta_mosorensis
+
+R126	Dinarolacerta_montenegrina
+
+R127	Anatolacerta_oertzeni
+
+R128	Dalmatolacerta_oxycephala
+
+R129	Lacerta_pamphylica
+
+R13	Anguis_cephallonica
+
+R130	Parvilacerta_parva
+
+R131	Timon_princeps
+
+R132	Lacerta_schreiberi
+
+R133	Lacerta_strigata
+
+R134	Lacerta_trilineata
+
+R135	Phoenicolacerta_troodica
+
+R136	Lacerta_viridis
+
+R137	Zootoca_vivipara
+
+R138	Laudakia_caucasia
+
+R139	Laudakia_stellio
+
+R14	Anguis_fragilis
+
+R140	Leptotyphlops_macrorhynchus
+
+R141	Trachylepis_aurata
+
+R142	Trachylepis_vittata
+
+R143	Macroprotodon_brevis
+
+R144	Macroprotodon_cucullatus
+
+R145	Macrovipera_lebetina
+
+R146	Macrovipera_schweizeri
+
+R147	Malpolon_monspessulanus
+
+R148	Mauremys_caspica
+
+R149	Mauremys_leprosa
+
+R15	Archaeolacerta_bedriagae
+
+R150	Mauremys_rivulata
+
+R151	Montivipera_raddei
+
+R152	Montivipera_wagneri
+
+R153	Montivipera_xanthina
+
+R154	Natrix_maura
+
+R155	Natrix_natrix
+
+R156	Natrix_tesselleta
+
+R157	Ophiomorus_punctatissimus
+
+R158	Ophisops_elegans
+
+R159	Phrynocephalus_guttatus
+
+R16	Asaccus_elisae
+
+R160	Phrynocephalus_helioscopus
+
+R161	Phrynocephalus_mystaceus
+
+R162	Phrynocephalus_persicus
+
+R163	Platyceps_najadum
+
+R164	Iranolacerta_brandtii
+
+R165	Podarcis_atrata
+
+R166	Podarcis_bocagei
+
+R167	Podarcis_carbonelli
+
+R168	Podarcis_erhardii
+
+R169	Podarcis_filfolensis
+
+R17	Blanus_cinereus
+
+R170	Podarcis_gaigeae
+
+R171	Podarcis_hispanica
+
+R172	Podarcis_lilfordi
+
+R173	Podarcis_melisellensis
+
+R174	Podarcis_milensis
+
+R175	Podarcis_muralis
+
+R176	Podarcis_peloponnesiaca
+
+R177	Podarcis_pityusensis
+
+R178	Podarcis_raffonei
+
+R179	Podarcis_sicula
+
+R18	Blanus_strauchi
+
+R180	Podarcis_taurica
+
+R181	Podarcis_tiliguerta
+
+R182	Podarcis_vaucheri
+
+R183	Podarcis_wagleriana
+
+R184	Psammodromus_manuelae
+
+R185	Psammodromus_hispanicus
+
+R186	Pseudopus_apodus
+
+R187	Rafetus_euphraticus
+
+R188	Darevskia_chlorogaster
+
+R189	Tarentola_angustimentalis
+
+R19	Chalcides_bedriagai
+
+R190	Tarentola_bischoffi
+
+R191	Tarentola_boettgeri
+
+R192	Tarentola_delalandii
+
+R193	Tarentola_gomerensis
+
+R194	Tarentola_mauritanica
+
+R195	Telescopus_fallax
+
+R196	Testudo_graeca
+
+R197	Testudo_hermanni
+
+R198	Emys_trinacris
+
+R199	Testudo_marginata
+
+R2	Ablepharus_budaki
+
+R20	Chalcides_bistriatus
+
+R200	Trapelus_agilis
+
+R201	Trapelus_lessonae
+
+R202	Trionyx_triunguis
+
+R203	Typhlops_vermicularis
+
+R204	Varanus_griseus
+
+R205	Montivipera_albizona
+
+R206	Vipera_ammodytes
+
+R207	Vipera_aspis
+
+R208	Vipera_berus
+
+R209	Montivipera_bulgardaghica
+
+R21	Chalcides_chalcides
+
+R210	Vipera_darevskii
+
+R211	Vipera_dinniki
+
+R212	Vipera_kaznakovi
+
+R213	Vipera_latastei
+
+R214	Vipera_nikolskii
+
+R215	Vipera_pontica
+
+R216	Vipera_transcaucasiana
+
+R217	Vipera_seoanei
+
+R218	Vipera_ursinii
+
+R219	Dolichophis_caspius
+
+R22	Chalcides_ocellatus
+
+R220	Chamaeleo_africanus
+
+R221	Dolichophis_jugularis
+
+R222	Hemorrhois_nummifer
+
+R223	Hemorrhois_algirus
+
+R224	Hierophis_gyarosensis
+
+R225	Dolichophis_schmidti
+
+R226	Elaphe_sauromates
+
+R227	Vipera_renardi
+
+R228	Stenodactylus_grandiceps
+
+R229	Acanthodactylus_boskianus
+
+R23	Chalcides_sexlineatus
+
+R230	Hemorrhois_ravergieri
+
+R231	Platyceps_ventromaculatus
+
+R232	Pseudocyclophis_persicus
+
+R233	Rhynchocalamus_melanocephalus
+
+R234	Spalerosophis_diadema
+
+R235	Eublepharis_angramainyu
+
+R236	Trachylepis_septemtaeniata
+
+R237	Acanthodactylus_harranensis
+
+R238	Acanthodactylus_grandis
+
+R239	Eremias_persica
+
+R24	Chalcides_simonyi
+
+R240	Vipera_eriwanensis
+
+R241	Zamenis_persica
+
+R242	Vipera_lotievi
+
+R245	Mesalina_brevirostris
+
+R246	Telescopus_nigriceps
+
+R247	Pseudocerastes_persicus
+
+R248	Rhinotyphlops_episcopus
+
+R249	Rhynchocalamus_barani
+
+R25	Chalcides_striatus
+
+R251	Macroprotodon_mauritanicus
+
+R252	Eirenis_coronelloides
+
+R253	Psammodromus_jeanneae
+
+R254	Podarcis_cretensis
+
+R26	Chalcides_viridanus
+
+R27	Chamaeleo_chamaeleon
+
+R28	Coronella_austriaca
+
+R29	Coronella_girondica
+
+R3	Ablepharus_chernovi
+
+R30	Cyrtopodion_caspium
+
+R31	Cyrtopodion_heterocercum
+
+R32	Cyrtopodion_kotschyi
+
+R33	Cyrtopodion_russowii
+
+R34	Cyrtopodion_scabrum
+
+R35	Darevskia_alpina
+
+R36	Darevskia_armeniaca
+
+R37	Darevskia_bendimahiensis
+
+R38	Darevskia_brauneri
+
+R39	Darevskia_caucasica
+
+R4	Ablepharus_kitaibelii
+
+R40	Darevskia_clarkorum
+
+R41	Darevskia_daghestanica
+
+R42	Darevskia_dahli
+
+R43	Darevskia_derjugini
+
+R44	Darevskia_dryada
+
+R45	Darevskia_lindholmi
+
+R46	Darevskia_mixta
+
+R47	Darevskia_nairensis
+
+R48	Darevskia_parvula
+
+R49	Darevskia_portschinskii
+
+R5	Ablepharus_pannonicus
+
+R50	Darevskia_praticola
+
+R51	Darevskia_raddei
+
+R52	Darevskia_rostombekovi
+
+R53	Darevskia_rudis
+
+R54	Darevskia_sapphirina
+
+R55	Darevskia_saxicola
+
+R56	Darevskia_unisexualis
+
+R57	Darevskia_uzzelli
+
+R58	Darevskia_valentini
+
+R59	Eirenis_aurolineatus
+
+R6	Acanthodactylus_erythrurus
+
+R60	Eirenis_barani
+
+R61	Platyceps_collaris
+
+R62	Eirenis_coronella
+
+R63	Eirenis_decemlineatus
+
+R64	Eirenis_eiselti
+
+R65	Eirenis_hakkariensis
+
+R66	Eirenis_levantinus
+
+R67	Eirenis_lineomaculatus
+
+R68	Eirenis_modestus
+
+R69	Eirenis_punctatolineatus
+
+R7	Acanthodactylus_schreiberi
+
+R70	Eirenis_rothi
+
+R71	Eirenis_thospitis
+
+R72	Elaphe_dione
+
+R73	Eirenis_medus
+
+R74	Zamenis_hohenackeri
+
+R75	Zamenis_lineatus
+
+R76	Zamenis_longissimus
+
+R77	Elaphe_quatuorlineata
+
+R78	Rhinechis_scalaris
+
+R79	Zamenis_situla
+
+R8	Algyroides_fitzingeri
+
+R80	Emys_orbicularis
+
+R81	Eremias_arguta
+
+R82	Eremias_intermedia
+
+R83	Eremias_pleskei
+
+R84	Eremias_scripta
+
+R85	Eremias_strauchi
+
+R86	Eremias_suphani
+
+R87	Eremias_velox
+
+R88	Eryx_jaculus
+
+R89	Eryx_miliaris
+
+R9	Algyroides_marchi
+
+R90	Euleptes_europaea
+
+R91	Eumeces_schneideri
+
+R92	Gallotia_atlantica
+
+R93	Gallotia_auaritae
+
+R94	Gallotia_bravoana
+
+R95	Gallotia_caesaris
+
+R96	Gallotia_galloti
+
+R97	Gallotia_intermedia
+
+R98	Gallotia_simonyi
+
+R99	Gallotia_stehlini
+
