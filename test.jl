@@ -8,6 +8,10 @@ using EcologicalNetworksPlots
 using CSV
 using DataFrames
 using GBIF
+using ProgressMeter
+
+theme(:mute)
+default(; frame=:box)
 
 # Read the tree
 tree = open(parsenexus, joinpath("data", "mammals.nex"))["*UNTITLED"]
@@ -65,7 +69,7 @@ end
 Y = tp .+ tn .- 1
 threshold = thresholds[findmax(Y)[2]]
 
-plot(fp, tp, lab="", aspectratio=1, xlim=(0,1), fill=(0, 0.2), ylim=(0,1))
+plot(fp, tp, lab="", aspectratio=1, xlim=(0,1), fill=(0, 0.2), ylim=(0,1), dpi=600)
 xaxis!("False positives")
 yaxis!("True positives")
 savefig("figures/roc.png")
@@ -75,14 +79,11 @@ heatmap((L*R).>threshold)
 
 # Get a random species pool from the tree
 treenodes = [n.name for n in tree.nodes if !startswith(n.name, "Node ")]
-canada = DataFrame(CSV.File(joinpath("data", "canada.csv")))
-canada = canada[canada.taxonRank .== "SPECIES", :]
-canada = canada[canada.numberOfOccurrences .> 1 , :]
-canada = canada[canada.order .!== "Cetacea" , :]
-cancodes = replace.(unique(filter(!ismissing, canada.species)), " " => "_")
+canada = DataFrame(CSV.File(joinpath("artifacts", "iucn_gbif_names.csv")))
+cancodes = replace.(unique(filter(!ismissing, canada.gbifname)), " " => "_")
 tree_cleanup = DataFrame(CSV.File(joinpath("artifacts", "upham_gbif_names.csv")))
 
-csp = dropmissing!(DataFrame(gbifname = canada.species))
+csp = dropmissing!(DataFrame(gbifname = canada.gbifname))
 csp = dropmissing(leftjoin(csp, tree_cleanup, on=:gbifname))
 
 canmammals = unique(csp.code)
@@ -156,7 +157,7 @@ for s in species(N)
     )
 end
 
-sort(netstats, :tl, rev=true)[1:10,:]
+sort(netstats, :omnivory, rev=true)[1:10,:]
 
 #
 
@@ -174,7 +175,7 @@ UL = UnravelledLayout(x=random_omnivory, y=trophic_level)
 position!(UL, I, N)
 
 plot(I, N, lab="", framestyle=:box)
-scatter!(I, N, nodefill=degree(N), colorbar=true, framestyle=:box, mc=:viridis)
+scatter!(I, N, nodefill=degree(N), colorbar=true, framestyle=:box, dpi=600)
 xaxis!("Omnivory")
 yaxis!("Trophic level")
 savefig("figures/omni-can.png")
@@ -187,7 +188,7 @@ UL = UnravelledLayout(x=random_omnivory, y=trophic_level)
 position!(UL, J, M)
 
 plot(J, M, lab="", framestyle=:box)
-scatter!(J, M, nodefill=degree(M), colorbar=true, framestyle=:box, mc=:viridis)
+scatter!(J, M, nodefill=degree(M), colorbar=true, framestyle=:box, dpi=600)
 xaxis!("Omnivory")
 yaxis!("Trophic level")
 savefig("figures/omni-eur.png")
