@@ -4,7 +4,7 @@ using ProgressMeter
 using Base.Threads
 
 checklist = DataFrame(CSV.File(joinpath("data", "taxonomy.csv")))
-valid_rows = map(fam -> !(fam ∈ ["BALAENIDAE", "PHYSETERIDAE", "DELPHINIDAE", "BALAENOPTERIDAE"]), checklist.familyName)
+valid_rows = map(fam -> !(fam ∈ ["BALAENIDAE", "PHYSETERIDAE", "DELPHINIDAE", "BALAENOPTERIDAE", "OTARIIDAE", "PHOCIDAE", "ODOBENIDAE"]), checklist.familyName)
 checklist = checklist[findall(valid_rows), :]
 
 checklist_cleanup_components = [DataFrame(code=String[], gbifname=String[], gbifid=Int64[], equal=Bool[]) for i in 1:nthreads()]
