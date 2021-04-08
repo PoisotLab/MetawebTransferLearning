@@ -1,5 +1,3 @@
-1.1
-
 using PhyloNetworks
 using EcologicalNetworks
 using DelimitedFiles
@@ -13,6 +11,7 @@ using DataFrames
 using GBIF
 using StatsBase
 using StatsModels
+using Distributions
 
 # Read the tree
 tree_net = readTopology(joinpath("data", "mammals.newick"));
@@ -21,48 +20,23 @@ tree_net = readTopology(joinpath("data", "mammals.newick"));
 namelist = DataFrame(CSV.File(joinpath("artifacts", "names_metaweb_tree_gbif.csv")))
 
 # Prepare the metaweb
-mwspecies = unique(namelist.name)
+eurometa = readdlm(joinpath("artifacts", "europeanmetaweb.csv"), ',', String)
+mwspecies = unique(eurometa)
 M = UnipartiteNetwork(zeros(Bool, length(mwspecies), length(mwspecies)), mwspecies)
-
-# Read the metaweb
-speciescodes = readdlm(joinpath("data", "Spp_Id.txt"))[2:end,:]
-speciesdict = Dict([speciescodes[i,1] => speciescodes[i,2] for i in 1:size(speciescodes,1)])
-mwlines = readlines(joinpath("data", "Metaweb_adults.csv"));
-mwhead = [speciesdict[sp] for sp in replace.(split(mwlines[1], ","), '"' => "")[2:end]]
-for row in mwlines[2:end]
-    splitrow = replace.(split(row, ","), '"' => "")
-    from = speciesdict[splitrow[1]]
-    # Real name?
-    realname = namelist[isequal(from).(namelist.metaweb),:name]
-    if length(realname) == 0
-        continue
-    else
-        sp_from = only(realname)
-        int = findall(isequal("1"), splitrow[2:end])
-        if !isempty(int)
-            to = mwhead[int]
-            to_names = namelist[map(n -> n in to, namelist.metaweb),:name]
-            for t in to_names
-                M[sp_from,t] = true
-            end
-        end
-    end
+for i in 1:size(eurometa, 1)
+    M[eurometa[i,:]...] = true
 end
 
-simplify!(M)
 # Partition the metaweb into two latent subspaces
 L, R = rdpg(M, 5)
 
 treeleaves = tipLabels(tree_net)
-canada = DataFrame(CSV.File(joinpath("data", "canada.csv")))
-canada = canada[canada.taxonRank .== "SPECIES", :]
-canada = canada[canada.numberOfOccurrences .> 1 , :]
-canada = canada[canada.order .!== "Cetacea" , :]
-cancodes = replace.(unique(filter(!ismissing, canada.species)), " " => "_")
+
+canada = DataFrame(CSV.File(joinpath("artifacts", "iucn_gbif_names.csv")))
+cancodes = replace.(unique(filter(!ismissing, canada.gbifname)), " " => "_")
 tree_cleanup = DataFrame(CSV.File(joinpath("artifacts", "upham_gbif_names.csv")))
 
-
-csp = dropmissing!(DataFrame(gbifname = canada.species))
+csp = dropmissing!(DataFrame(gbifname = canada.gbifname))
 csp = dropmissing(leftjoin(csp, tree_cleanup, on=:gbifname))
 
 canmammals = unique(csp.code)
@@ -113,8 +87,8 @@ for coord in 1:size(R')[2]
     Results_R[!,"x$(coord)low"] = lower;
     Results_R[!,"x$(coord)up"] = upper;
     Results_R[!,"x$(coord)mean"] = mean_trait;
-end
 
+end
 
 canadian_rec_L = innerjoin(dropmissing(Results_L), pool, on = :tipNames)
 canadian_rec_R = innerjoin(dropmissing(Results_R), pool, on = :tipNames)
@@ -128,42 +102,44 @@ r = canadian_rec_R[!,
     Array |>
     transpose
 
-#P = simplify(UnipartiteQuantitativeNetwork(, pool))
-l*r |> heatmap
+lₗ = canadian_rec_L[!,
+    ["x1low", "x2low", "x3low", "x4low", "x5low"]] |>
+    Array
 
-# we compare it with Timothée work
-using Phylo
-tree = open(parsenexus, joinpath("data", "mammals.nex"))["*UNTITLED"]
-k = 3
-# I need to change this to my ordering of the beasts
-pool = canadian_rec_R.tipNames
-poolsize = length(pool)
-lₜ = zeros(Float64, poolsize, size(L, 2))
-rₜ = permutedims(lₜ)
-Threads.@threads for i in 1:length(pool)
-    target = pool[i]
-    D = [distance(tree, target, first(namelist[isequal(n).(namelist.name),:upham])) for n in species(M)]
-    p = sortperm(D)
-    if iszero(minimum(D))
-        rₜ[:,i] = R[:,p][:,1]
-        lₜ[i,:] = L[p,:][1,:]
-    else
-        rₜ[:,i] = mean(R[:,p][:,1:k]; dims=2)
-        lₜ[i,:] = mean(L[p,:][1:k,:]; dims=1)
-    end
+lᵤ = canadian_rec_L[!,
+    ["x1up", "x2up", "x3up", "x4up", "x5up"]] |>
+    Array
+
+rₗ = canadian_rec_R[!,
+    ["x1low", "x2low", "x3low", "x4low", "x5low"]] |>
+    Array |> transpose
+
+rᵤ = canadian_rec_R[!,
+    ["x1up", "x2up", "x3up", "x4up", "x5up"]] |>
+    Array |> transpose
+
+ld = Matrix{Uniform}(undef, size(l))
+for i in eachindex(ld)
+    ld[i] = Uniform(lₗ[i], lᵤ[i])
 end
 
-lₜ*rₜ |> heatmap
+rd = Matrix{Uniform}(undef, size(r))
+for i in eachindex(rd)
+    rd[i] = Uniform(rₗ[i], rᵤ[i])
+end
 
-# It's all over the place
-# but not thaaaat much given the huge uncertainty
-# we have in the data itself 
-scatter(vec(l*r),vec(lₜ*rₜ),
-    lab = "",
-    markersize = 1
-)
-title!("Raw interaction scores from two traits inference methods:")
-xaxis!("Phylogenetic Brownian motion")
-yaxis!("Phylogenetic kmeans")
+draws = 20_000
 
-savefig("figures/Phylobbm_vs_phylo_kmeans.png")
+Ld = [rand.(ld) for i in 1:draws]
+Rd = [rand.(rd) for i in 1:draws]
+
+Ns = [(Ld[i]*Rd[i]).>0.11 for i in 1:length(Ld)]
+P = UnipartiteProbabilisticNetwork(reduce(.+, Ns)./draws, replace.(canadian_rec_L.tipNames, "_" => " "))
+
+sort(interactions(P), by = (x) -> x.probability, rev=true)
+
+histogram([x.probability for x in interactions(P)])
+heatmap(adjacency(P))
+
+omn = omnivory.(rand(P, 100))
+O = Dict{String,Float64}([sp => mean([o[sp] for o in omn]) for sp in species(P)])

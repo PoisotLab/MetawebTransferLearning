@@ -2,6 +2,7 @@
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 EcologicalNetworks = "f03a62fe-f8ab-5b77-a061-bb599b765229"
 EcologicalNetworksPlots = "9f7a259d-73a7-556d-a7a2-3eb122d3865b"
 GBIF = "ee291a33-5a6c-5552-a3c8-0f29a1181037"
