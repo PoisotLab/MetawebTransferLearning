@@ -4,9 +4,10 @@
 
 Why we should care about ecological networks yet information 
 is scarce and collecting it is hard so we need reliable ways 
-to predict them
+to predict them (Poisot 2021 100% fits in here somewhere) networks are difficult to adequately sample in nature Banašek‐Richter 2004 Chacoff 2012, Gibson 2011, Jordano, 2016 - both (both is good)
 
-Why fancy maths/ML is a good toolset - specifically briefly 
+Why fancy maths/ML/transfer learning is a good toolset - 
+specifically briefly 
 mention tools we are using in light of their flexibility and 
 how they 'only' need 'limited' data. Segue this into needing 
 only phylogeny (refer to Stock 2021 in here)
@@ -15,6 +16,12 @@ Maybe something on the value of using phylogenies? They are
 more readily available (and cover a greater geographic 
 extent) AND phylogenies tell us a lot about the species - 
 trait conservation
+
+do we discuss the value of traits in determining interactions??
+if yes turn to here: Bartomeus 2016, Brousseau 2018, 
+Desjardins‐Proulx 2017, Gravel 2013
+
+data‐poor environments (Beauchesne et al., 2016)
 
 Then some sort of 'mission statement' *i.e.* to test this 
 method we wanted to see how well we could predict the Canadian 
