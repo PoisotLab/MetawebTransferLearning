@@ -29,9 +29,21 @@ A = DataFrame()
 A.Predator = repeat(sp_list.ScientificName, outer = 29)
 A.Prey = repeat(sp_list.ScientificName, inner = 29)
 
-NLmetaweb.Interaction = ones(size(NLmetaweb, 1))
+NLmetaweb.Interaction = fill(true, size(NLmetaweb,1))
 NLmetaweb = leftjoin(A, NLmetaweb, on = [:Predator => :Predator, :Prey => :Prey])
+replace!(NLmetaweb.Interaction, missing => false)
 
+PredictedMetaweb.Interaction = fill(true, size(PredictedMetaweb,1))
 PredictedMetaweb = leftjoin(A, PredictedMetaweb, on = [:Predator => :Predator, :Prey => :Prey])
+replace!(PredictedMetaweb.Interaction, missing => false)
+
 # Confusion matrix
-a = 
+tp = sum(PredictedMetaweb.Interaction .& NLmetaweb.Interaction)
+fp = sum(PredictedMetaweb.Interaction .& .!NLmetaweb.Interaction)
+fn = sum(.!PredictedMetaweb.Interaction .& NLmetaweb.Interaction)
+tn = sum(.!PredictedMetaweb.Interaction .& .!NLmetaweb.Interaction)
+
+sensitivity = tp / (tp + fn) # true positive rate
+specificity = tn / (tn + fp) # true negative rate
+tss = specificity + sensitivity - 1 # True skill statistic
+accuracy = (tp + tn) / size(NLmetaweb, 1) # accuracy
