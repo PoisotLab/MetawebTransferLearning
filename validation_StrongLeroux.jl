@@ -2,6 +2,8 @@ using DataFrames
 using CSV
 
 sp_list = DataFrame(CSV.File(joinpath("data", "StrongLeroux","sp_transfer.csv")))
+# We took scientific names from the original paper. We changed Alces americanus for Alces alces, Alopex lagopus for Vulpes lagopus, and Neovison vison for Mustela vison to be consistent with the names in the predicted web.
+# 2 other species in the metaweb of Strong & Leroux were not in our list of canadian species (iucn_gbif_names.csv): Myodes glareaolus and Rattus norvegicus.
 NLmetaweb = DataFrame(CSV.File(joinpath("data", "StrongLeroux","StrongLeroux_raw.csv")))
 
 # Change predator names to scientific name
@@ -11,6 +13,7 @@ rename!(NLmetaweb, Dict("ScientificName" => "Predator"))
 
 # Change prey names to scientific name
 rename!(NLmetaweb, Dict("Food item" => "FoodItem"))
+dropmissing!(NLmetaweb, :FoodItem)
 NLmetaweb = leftjoin(NLmetaweb, sp_list, on = :FoodItem => :CommonName)
 rename!(NLmetaweb, Dict("ScientificName" => "Prey"))
 
