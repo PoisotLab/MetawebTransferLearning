@@ -10,8 +10,28 @@ Banašek‐Richter 2004 Chacoff 2012, Gibson 2011, Jordano, 2016
 --- both (both is good *i.e.* Jordano a and b) 
 *why do we care about predicting networks*
 
+Other methods such as the fourth corner model-based approach (Brown_Warton_Andrew_Binns_Cassis_Gibb_2014)
+could be used to reproduce the network, by considering phylogeny. 
+However, "Model selection methods tend to perform best when given a relatively 
+small number of variables (and hence a small number of candidate models) 
+to select from Burnham & Anderson (2002).It is especially important to try to keep the number 
+of explanatory variables small in fourth‐corner models because of the use of interaction terms – 
+a model with ten environmental terms and ten trait terms would then have 100 interaction terms, 
+which is usually too many to reliably identify the important interactions when using just a single 
+data set. Hence, one should carefully consider prior to analysis which variables to include and 
+attempt to compile a ‘shortlist’. Particularly, useful for shortlisting variables is prior knowledge 
+from the literature, and diagnostic tools for collinearity (Zuur, Ieno & Elphick 2010)." (from Brown&al.2014)
+
+The tools we decided to use are more flexible and 'only need limited data'(-> define). 
+The network is predicted using phylogenetic inference of ecological interactions through truncated-SVD, 
+RDPG and network embedding (refer to Stock 2021 in here, Tanya).
+SVD reduces information to important ones, while RDPG (uses latent space to..) and network-embedding (to learn...).
+
 > Here we have Box 1: that provides a visual scaffold of the 
 > methods workflow
+
+Goal is to use phylogeny to predict interactions
+
 ## Methods
 
 ### Dataset preparation 
@@ -60,9 +80,9 @@ is a $n \times k$ matrix.
 The decomposition into left/right subspaces is unique, represents 
 latent traits for resp. outgoing and incoming edges, and can be
  used to predict interactions. Predator traits on the one side 
- and prey on the other
+ and prey (vulnerability traits) on the other
 
- *Selecting the rank:*
+ *Selecting the rank:* mention the elbow method here ? Used to determine the number of clusters.
 
 *Network embedding:* We extracted the left and right subspaces 
 of a rank-5 *t-SVD* of the European mammals metaweb. When 
@@ -80,7 +100,7 @@ This ensure that shared species are at the same position in both
 latent subspaces.
 
 *Prediction:* The prediction of interactions was done through a 
-random dot product graph, by multiplication of the inferred left 
+random dot product graph (RDPG), by multiplication of the inferred left 
 and right subspaces and thresholding at the value estimated during 
 step 2. This yields a network with 223 species of mammals and approx. 
 6000 interactions.
@@ -88,8 +108,17 @@ step 2. This yields a network with 223 species of mammals and approx.
 ### Validation
 
 *Validation:* Network structure (omnivory), body mass ratio 
-(biological relationships), and
-Newfoundland tree [@Strong2014ImpNon] (using empirical data)
+(biological relationships), and Newfoundland tree [@Strong2014ImpNon]
+
+In the absence of empirical networks, we used ecological concepts as measures of trust to assess 
+the efficacy/accuracy/performance of the predicted network.
+The predator-prey bodymass/(size?) ratio influences the predator-prey interactions 
+in food-web studies (Nakazawa_Ushio_Kondoh_2011). Predation matrices are used 
+to verify the body mass ratio.
+Visualizing the network helps to identify omnivory (trophic levels) in the network structure.
+A sample of the model's prediction is compared to an empirical network 
+(Newfoundland tree [@Strong2014ImpNon], beavers?) to evaluate the model's performance. 
+
 
 ## Results and discussion
 
@@ -103,6 +132,7 @@ here are some metrics
 
 Challenges of validation - even empirical webs are imperfect 
 Need for a suite of validation techniques?
+
 
 ## Concluding notes
 
