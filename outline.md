@@ -27,8 +27,7 @@ The network is predicted using phylogenetic inference of ecological interactions
 RDPG and network embedding (refer to Stock 2021 in here, Tanya).
 SVD reduces information to important ones, while RDPG (uses latent space to..) and network-embedding (to learn...).
 
-> Here we have Box 1: that provides a visual scaffold of the 
-> methods workflow
+![Much art.](figures/conceptual.png){#fig:conceptual}
 
 Goal is to use phylogeny to predict interactions
 
