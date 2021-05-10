@@ -1,5 +1,47 @@
 # Phylogenetic inference of ecological interactions through network embedding
 
+
+**Motivation** 
+1. This is what we want. 
+2. This is what is missing. 
+3. But this is what we have. 
+4. We can take what we have to a new place (we can bring it with 
+us - "transfer knowledge across space") . This is what we do
+5. This is what we got
+6. How to make sure that what we got makes sense.
+
+How to bring knowledge from one place to another
+
+> Figure 1: A = conceptual figure; B = Euro web; C = CA web
+
+![Much art.](figures/conceptual.png){#fig:conceptual}
+
+*Next three points will be very short maybe even 1 paragraph for all*
+
+**Phylogeny** We have species occurrence records *i.e.* so we know who is 
+there. Even though we don't have the same species we have phylogenetic 
+overlap *i.e.* so we know how they are connected/related.
+
+**SVD** It reduces dimensionality (truncates) but more importantly 
+it is very good for making predictions.
+
+**RDPG** This is the transferring of knowledge part *i.e* predicting. This 
+is how we make predictions in a new 'space'
+"RDPG is a latent position generative model, in which the probability of an edge 
+existing between pairs of vertices is determined by the dot product of the associated 
+latent position vectors."
+
+**Validation** Hey we found some really cool result but how de we validate them? 
+We can look at structure (omnivory), biological relationships (body mass) and 
+empirical data ([@Strong2014ImpNon])
+
+> Figure 2: A = comparison trophic levels, omnivory; B = body mass?
+
+*Future considerations* Degree of phylogenetic overlap - how much do we need? 
+Possibly woven into validation section
+
+
+## 'Throw away' text
 ## Introduction
 
 Why we should care about ecological networks yet information 
@@ -10,26 +52,7 @@ Banašek‐Richter 2004 Chacoff 2012, Gibson 2011, Jordano, 2016
 --- both (both is good *i.e.* Jordano a and b) 
 *why do we care about predicting networks*
 
-Other methods such as the fourth corner model-based approach (Brown_Warton_Andrew_Binns_Cassis_Gibb_2014)
-could be used to reproduce the network, by considering phylogeny. 
-However, "Model selection methods tend to perform best when given a relatively 
-small number of variables (and hence a small number of candidate models) 
-to select from Burnham & Anderson (2002).It is especially important to try to keep the number 
-of explanatory variables small in fourth‐corner models because of the use of interaction terms – 
-a model with ten environmental terms and ten trait terms would then have 100 interaction terms, 
-which is usually too many to reliably identify the important interactions when using just a single 
-data set. Hence, one should carefully consider prior to analysis which variables to include and 
-attempt to compile a ‘shortlist’. Particularly, useful for shortlisting variables is prior knowledge 
-from the literature, and diagnostic tools for collinearity (Zuur, Ieno & Elphick 2010)." (from Brown&al.2014)
 
-The tools we decided to use are more flexible and 'only need limited data'(-> define). 
-The network is predicted using phylogenetic inference of ecological interactions through truncated-SVD, 
-RDPG and network embedding (refer to Stock 2021 in here, Tanya).
-SVD reduces information to important ones, while RDPG (uses latent space to..) and network-embedding (to learn...).
-
-![Much art.](figures/conceptual.png){#fig:conceptual}
-
-Goal is to use phylogeny to predict interactions
 
 ## Methods
 
@@ -78,10 +101,10 @@ $\sigma$ values. $\mathbf{U}$ is now a $m \times k$ matrix and $\mathbf{V}$
 is a $n \times k$ matrix.
 The decomposition into left/right subspaces is unique, represents 
 latent traits for resp. outgoing and incoming edges, and can be
- used to predict interactions. Predator traits on the one side 
- and prey (vulnerability traits) on the other
+used to predict interactions. Predator traits on the one side 
+and prey (vulnerability traits) on the other
 
- *Selecting the rank:* mention the elbow method here ? Used to determine the number of clusters.
+*Selecting the rank:* mention the elbow method here ? Used to determine the number of clusters.
 
 *Network embedding:* We extracted the left and right subspaces 
 of a rank-5 *t-SVD* of the European mammals metaweb. When 
@@ -118,25 +141,4 @@ Visualizing the network helps to identify omnivory (trophic levels) in the netwo
 A sample of the model's prediction is compared to an empirical network 
 (Newfoundland tree [@Strong2014ImpNon], beavers?) to evaluate the model's performance. 
 
-
-## Results and discussion
-
-> Figure 1 is a multi-paneled output of results: ROC, matrix??
-
-Hey look lots of similarities between Europe and Canada and 
-here are some metrics
-
-> Figure 2 is a multi-paneled output of validation: body mass 
-> ratio, omnivory/trophic comparison and Newfoundland metaweb
-
-Challenges of validation - even empirical webs are imperfect 
-Need for a suite of validation techniques?
-
-
-## Concluding notes
-
-This method is the bestest - use it
-
 ## References
-
-## Supplementary stuff
