@@ -14,29 +14,32 @@ to make accurate predictions of interaction networks for a species pool
 or location for which we have no *a priori* knowledge of interactions?
 
 The probability of an interaction occurring between two species depends 
-on a set of conditions being met, namely that they need to co-occur to 
-some extent and that the two species are 'compatible' in the sense that 
-the interaction is actually possible based on their traits *e.g.* the 
-relationship between prey and predator gape size (**better e.g?**) 
-[@Jordano2016SamNet]. Trait-driven selection results in interactions 
-being conserved at an evolutionary scale. Thus the phylogenetic relatedness 
-(**better word here**) for a given community can inform as to how they 
+on a set of conditions being met, including that they need to co-occur to 
+some extent **and** that the two species are 'compatible' in the sense that 
+an interaction is actually possible based on a physical or behavioural 
+trait *e.g.* the relationship between predator and prey gape size 
+(**better e.g here**) [@Jordano2016SamNet]. This trait-driven selection 
+results in interactions being conserved at the evolutionary level and this 
+signal will be captured within a phylogeny. Thus using the phylogenetic 
+relatedness for a given community can inform as to how they may
 interact with each other 
 [@Davies2021EcoRed; @Elmasri2020HieBay; @Gomez2010EcoInt]. Given these 
 relationships it is thus possible to predict what an interaction network 
 may look like using two (relatively) easily accessible data sources - 
-namely species occurrence records *i.e.* a species list as well as some 
-measure of how they are related *i.e.* a taxonomic backbone/measure of 
-phylogenetic relatedness for the given species pool. There is also the 
-need for *a* species interaction network, 
-(**something here about it doesn't need to be a perfect match, whatever**).
+namely the community composition *i.e.* species occurrence records as 
+well as some measure of how they are related *i.e.* a taxonomic 
+backbone/measure of phylogenetic relatedness for the given species pool. 
+In addition a known species interaction is needed to allow for the model 
+to learn how communities and traits determine interactions - importantly 
+the network need not be a perfect 1:1 match with regards to species overlap.
+(**still some kinks in this last section**).
 
 In this manuscript we present a proof-of-concept using the mammalian 
 component of the European 
 metaweb [@Maiorano2020TetEu] to predict the Canadian mammalian metaweb 
-using only a species list for the region as well as a resolved mammalian 
-phylogeny [@Upham2019InfMam] as additional data sources (ref Fig 1), 
-of which both data types/sources are easily accessible.
+using only species occurence records for the region as well as a resolved 
+mammalian phylogeny [@Upham2019InfMam] as additional data sources (Fig 1), 
+for which both data types/sources are easily accessible.
 
 > Figure 1: A: We have a workflow overview which we can potentially 
 > subdivide/section to follow the narrative more closely. B: The Euro 
@@ -55,23 +58,25 @@ for novel species, we reconstruct their latent traits by averaging the
 values of those of their 3 closest neighbours (based on the cophenetic 
 matrix of the entire tree). This ensures that shared species are at the 
 same position in both latent subspaces.
+**Potentially controversial - went present tense here**
 
 *Transferring the knowledge:*
 Through the process of inferring the latent traits of the Canadian mammals 
-we are also recreating/inferring the left and right subspaces for Canada.
-**Potential for a linking statement here**
-Using a random dot product graph (RDPG), we multiply the inferred left 
-and right Canadian subspaces at a given threshold to predict the Canadian 
-metaweb. 
+we are also recreating/inferring the left and right subspaces for the 
+Canadian community. Leveraging the predictive potential from *t-SVD* 
+subspaces as well as a random dot product graph (RDPG), we multiply the 
+inferred left and right Canadian subspaces at a given threshold to predict 
+the mammalian Canadian metaweb (see the extended methods for a more 
+comprehensive breakdown of the methods). 
 
 *The outcomes:*
-**I do think this can be a one-liner we throw in with the previous section?**
+**I do think this can be a one-liner we throw in with the previous/next section?**
 
 > Figure 2: A: Possibly ROC, B: Body mass, C: omnivory (unless we have this
 > as panels in fig 1)
 
-*The validity:*
-At face value this technique is shown to preform excellently (ref to ROC?) 
+*The validity of the knowledge:*
+At face value this technique is shown to preform excellently (fig 2) 
 it does raise the question of validation techniques with regards to 
 biological plausibility. In the absence of empirical data to use as a 
 test/validation dataset we need to turn to ecological concepts as a means 
