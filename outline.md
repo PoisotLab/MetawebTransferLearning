@@ -43,21 +43,22 @@ for which both data types/sources are easily accessible.
 
 > Figure 1: A: We have a workflow overview which we can potentially 
 > subdivide/section to follow the narrative more closely. B: The Euro 
-> network C: The CA netwrok???
+> network C: The CA network???
 
 *Embedding the knowledge:*
-Using a truncated singular value 
-decomposition (*t-SVD*) of the European metaweb we are able to extract the 
-left and right subspaces, these subspaces are representative of the latent 
-traits of prey and predator species respectively **CHECK**. This provides 
-us with information as to how species' latent traits determine their 
-interactions. We then map these latent traits to the mammalian phylogenetic 
+Using a truncated singular value decomposition (*t-SVD*) of the European 
+metaweb to reduce dimensionality, we are able to extract the left and right 
+*Should we mention the elbow method here ?*. 
+These subspaces are representative of the latent traits of predator (left?) 
+and prey(right?) species respectively **CHECK**. 
+This provides us with information as to how species' latent traits determine 
+their interactions. We then map these latent traits to the mammalian phylogenetic 
 tree *i.e* matching traits to the phylogeny. For species shared between 
-Europe and Canada it is possible to directly infer their latent traits 
-for novel species, we reconstruct their latent traits by averaging the 
+Europe and Canada it is possible to directly infer their latent traits.
+For novel species, we reconstruct their latent traits by averaging the 
 values of those of their 3 closest neighbours (based on the cophenetic 
 matrix of the entire tree). This ensures that shared species are at the 
-same position in both latent subspaces.
+same position in both latent subspaces. 
 **Potentially controversial - went present tense here**
 
 *Transferring the knowledge:*
@@ -72,26 +73,26 @@ comprehensive breakdown of the methods).
 *The outcomes:*
 **I do think this can be a one-liner we throw in with the previous/next section?**
 
-> Figure 2: A: Possibly ROC, B: Body mass, C: omnivory (unless we have this
+> Figure 2: A: Possibly ROC-AUC, B: Body mass, C: omnivory (unless we have this
 > as panels in fig 1)
 
 *The validity of the knowledge:*
-At face value this technique is shown to preform excellently (fig 2) 
+At face value this technique is shown to perform excellently (fig 2) 
 it does raise the question of validation techniques with regards to 
 biological plausibility. In the absence of empirical data to use as a 
 test/validation dataset we need to turn to ecological concepts as a means 
 of validating model outputs. For example using the estimated body size 
 relationships between predator and prey [@Brose2006ConRes] or looking 
-as network structure/motifs [**more on this**] as well as using other 
+at network structure/motifs [**more on this**] as well as using other 
 predictions of network structure *e.g.* number of links 
-[@MacDonald2020RevLina] and compare those to the predicted network 
+[@MacDonald2020RevLina] and comparing those to the predicted network 
 could be used as an 
 indication of the ecological validity for a predicted network (ref fig2).
 As a caveat even if we were to have an 
 empirical dataset we need to query the completeness of that dataset 
 given that observations may be overlooked in the field *e.g.*
 using a similar pairwise learning approach @Stock2021PaiLea made 
-predictions for interactions that had previously be unobserved in their 
+predictions for interactions that had previously been unobserved in their 
 network. This does also raise the possibility of using this transfer 
 learning *within* a dataset as a means of evaluating its completeness 
 as well as filling in potential gaps. (**I think this is valid???**). 
