@@ -4,11 +4,23 @@
 
 ## Singular value decomposition as a predictive tool
 
+Describe SVD
+
+Elbow - getting the optimal rank
+
+Report degree of phylogenetic overlap somewhere here?
+
 ## Network embedding
+
+Mapping phylogeny
 
 ## Predicting
 
+RDPG
+
 ## Validating
+
+All the different things
 
 **Motivation** 
 1. This is what we want. 

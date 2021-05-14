@@ -37,7 +37,7 @@ the network need not be a perfect 1:1 match with regards to species overlap.
 In this manuscript we present a proof-of-concept using the mammalian 
 component of the European 
 metaweb [@Maiorano2020TetEu] to predict the Canadian mammalian metaweb 
-using only species occurence records for the region as well as a resolved 
+using only species occurrence records for the region as well as a resolved 
 mammalian phylogeny [@Upham2019InfMam] as additional data sources (Fig 1), 
 for which both data types/sources are easily accessible.
 
@@ -71,7 +71,7 @@ the mammalian Canadian metaweb (see the extended methods for a more
 comprehensive breakdown of the methods). 
 
 *The outcomes:*
-**I do think this can be a one-liner we throw in with the previous/next section?**
+**I do think this can be a one-liner we throw in with the previous/next section? do we need to report actual values e.g. number of species/interaction/links/whatever - can probably get away with putting this in the extended data section**
 
 > Figure 2: A: Possibly ROC-AUC, B: Body mass, C: omnivory (unless we have this
 > as panels in fig 1)
@@ -111,3 +111,7 @@ incorporate a greater diversity taxa?
 **What is the plausibility of using this as a means of supplementing/'fixing' current datasets to account for unobserved interactions i.e. false negatives??**
 
 **Also the idea/feasibility of reconstruction i.e. historic networks**
+
+**Lack of interaction strength - we only work with binary - should be fine since SVD takes $\mathbb{R}$ numbers along with $\mathbb{B}$**
+
+**Differences in diet in different region - but so different that there is actually no overlap... different populations of the same species i.e. phylogeny might not catch this**
