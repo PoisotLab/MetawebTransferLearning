@@ -1,6 +1,14 @@
+# Extended methods
 
+## Data cleaning and preparation
 
+## Singular value decomposition as a predictive tool
 
+## Network embedding
+
+## Predicting
+
+## Validating
 
 **Motivation** 
 1. This is what we want. 
