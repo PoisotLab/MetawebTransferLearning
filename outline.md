@@ -1,4 +1,4 @@
-# Phylogenetic inference of ecological interactions through network embedding
+# Network reconstruction using phylogenetic inference of ecological interactions through network embedding
 
 The extreme difficulty in empirically documenting species interactions 
 and being able to build interaction networks poses a considerable 
@@ -56,7 +56,7 @@ their interactions. We then map these latent traits to the mammalian phylogeneti
 tree *i.e* matching traits to the phylogeny. For species shared between 
 Europe and Canada it is possible to directly infer their latent traits.
 For novel species, we reconstruct their latent traits by averaging the 
-values of those of their 3 closest neighbours (based on the cophenetic 
+values of those of their three closest neighbours (based on the cophenetic 
 matrix of the entire tree). This ensures that shared species are at the 
 same position in both latent subspaces. 
 **Potentially controversial - went present tense here**
@@ -107,3 +107,7 @@ this methodology when the overlap decreases - do we see a decline in
 predictive performance with a decline in overlap? Our species pool was 
 constrained to only mammals - again what happens when we start to 
 incorporate a greater diversity taxa?
+
+**What is the plausibility of using this as a means of supplementing/'fixing' current datasets to account for unobserved interactions i.e. false negatives??**
+
+**Also the idea/feasibility of reconstruction i.e. historic networks**
