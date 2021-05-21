@@ -1,17 +1,13 @@
-# Network reconstruction using phylogenetic inference of ecological interactions through network embedding
+# Food web reconstruction using phylogenetic inference of latent variables on ecological interactions through network embedding
 
-The extreme difficulty in empirically documenting species interactions 
-and being able to build interaction networks poses a considerable 
-challenge within the context of studying and understanding ecological 
-networks. This means that real world datasets are sparse and geographically 
-biased [@Poisot2021GloKno]. However, there is feasibility in taking 
-the knowledge of species interactions for a given location, transferring 
-it to a different species pool or location and making a prediction of what 
-the interaction network may look like. In other words can we 
-transfer the knowledge contained in one network by using phylogenetic 
-inference of the ecological interactions through using network embedding 
-to make accurate predictions of interaction networks for a species pool 
-or location for which we have no *a priori* knowledge of interactions?
+The extreme difficulty in documenting species interactions 
+and being able to build networks poses a considerable 
+challenge to understanding the emergent properties of ecological communities **Ref Jordano 2016**.
+Real world datasets are sparse and geographically 
+biased [@Poisot2021GloKno]. Here, we show that it is possible to take
+knowledge of species interactions for a location, to embed this knowledge into latent variables,
+and to transfer  it to a different species pool (*i.e.* nodes in the network are different species) by performing phylogenetic
+inference of the latent variables. Because our approach relies on phylogenetic relatedness of species, it functions even where there are no shared species between the two locations.
 
 The probability of an interaction occurring between two species depends 
 on a set of conditions being met, including that they need to co-occur to 
