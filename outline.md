@@ -2,88 +2,75 @@
 
 The extreme difficulty in documenting species interactions 
 and being able to build networks poses a considerable 
-challenge to understanding the emergent properties of ecological communities **Ref Jordano 2016**.
+challenge to understanding the emergent properties of ecological communities
+[@Jordano2016SamNet; @Jordano2016ChaEco].
 Real world datasets are sparse and geographically 
-biased [@Poisot2021GloKno]. Here, we show that it is possible to take
-knowledge of species interactions for a location, to embed this knowledge into latent variables,
-and to transfer  it to a different species pool (*i.e.* nodes in the network are different species) by performing phylogenetic
-inference of the latent variables. Because our approach relies on phylogenetic relatedness of species, it functions even where there are no shared species between the two locations.
+biased [@Poisot2021GloKno]. Here we reconstruct the 
+mammalian Canadian food web using interaction data from the 
+European metaweb, network embedding, a species list 
+and the mammalian phylogenetic tree. Thereby highlighting 
+this as both a data and computationally inexpensive methodology 
+for predicting interaction networks for which there is no data.
+**Do we throw a sentence in here about validation?**
 
 The probability of an interaction occurring between two species depends 
-on a set of conditions being met, including that they need to co-occur to 
-some extent **and** that the two species are 'compatible' in the sense that 
-an interaction is actually possible based on a physical or behavioural 
-trait *e.g.* the relationship between predator and prey gape size 
-(**better e.g here**) [@Jordano2016SamNet]. This trait-driven selection 
-results in interactions being conserved at the evolutionary level and this 
-signal will be captured within a phylogeny. Thus using the phylogenetic 
-relatedness for a given community can inform as to how they may
-interact with each other 
-[@Davies2021EcoRed; @Elmasri2020HieBay; @Gomez2010EcoInt]. Given these 
-relationships it is thus possible to predict what an interaction network 
-may look like using two (relatively) easily accessible data sources - 
-namely the community composition *i.e.* species occurrence records as 
-well as some measure of how they are related *i.e.* a taxonomic 
-backbone/measure of phylogenetic relatedness for the given species pool. 
-In addition a known species interaction is needed to allow for the model 
-to learn how communities and traits determine interactions - importantly 
-the network need not be a perfect 1:1 match with regards to species overlap.
-(**still some kinks in this last section**).
-
-In this manuscript we present a proof-of-concept using the mammalian 
-component of the European 
-metaweb [@Maiorano2020TetEu] to predict the Canadian mammalian metaweb 
-using only species occurrence records for the region as well as a resolved 
-mammalian phylogeny [@Upham2019InfMam] as additional data sources (Fig 1), 
-for which both data types/sources are easily accessible.
+on a set of conditions being met, i) they need to co-occur
+**and** ii) species are 'compatible' based on behavioural 
+or physical traits [@Jordano2016SamNet]. This trait-driven selection 
+results in interactions being conserved at the evolutionary level and, 
+by extension, the phylogeny, which can be used to infer interactions 
+between species [@Davies2021EcoRed; @Elmasri2020HieBay; @Gomez2010EcoInt]. 
+Using a known interaction network we can *learn* which traits are determining 
+what interactions between those species. This knowledge is then *transferred* 
+to a different species pool using their phylogenetic relationship (relatedness) 
+with the original species to infer traits, and by extension, the likelihood of 
+an interaction occurring (Fig 1). 
+**I think we need to mention that we are working with latent traits somehow...**
 
 > Figure 1: A: We have a workflow overview which we can potentially 
 > subdivide/section to follow the narrative more closely. B: The Euro 
 > network C: The CA network???
 
+*Retcon I think we should just have the conceptual figure here and have results relegated to figure 2?*
+
 *Embedding the knowledge:*
 Using a truncated singular value decomposition (*t-SVD*) of the European 
-metaweb to reduce dimensionality, we are able to extract the left and right 
-*Should we mention the elbow method here ?*. 
-These subspaces are representative of the latent traits of predator (left?) 
-and prey(right?) species respectively **CHECK**. 
-This provides us with information as to how species' latent traits determine 
-their interactions. We then map these latent traits to the mammalian phylogenetic 
+metaweb to reduce dimensionality, we are able to extract the left and right
+subspaces which are the latent traits of predator and prey species respectively. 
+We then map these latent traits to the mammalian phylogenetic 
 tree *i.e* matching traits to the phylogeny. For species shared between 
 Europe and Canada it is possible to directly infer their latent traits.
 For novel species, we reconstruct their latent traits by averaging the 
 values of those of their three closest neighbours (based on the cophenetic 
 matrix of the entire tree). This ensures that shared species are at the 
-same position in both latent subspaces. 
-**Potentially controversial - went present tense here**
+same position in both latent subspaces.
 
 *Transferring the knowledge:*
 Through the process of inferring the latent traits of the Canadian mammals 
-we are also recreating/inferring the left and right subspaces for the 
+we are also reconstructing the left and right subspaces for the 
 Canadian community. Leveraging the predictive potential from *t-SVD* 
 subspaces as well as a random dot product graph (RDPG), we multiply the 
 inferred left and right Canadian subspaces at a given threshold to predict 
 the mammalian Canadian metaweb (see the extended methods for a more 
-comprehensive breakdown of the methods). 
-
-*The outcomes:*
-**I do think this can be a one-liner we throw in with the previous/next section? do we need to report actual values e.g. number of species/interaction/links/whatever - can probably get away with putting this in the extended data section**
+comprehensive breakdown of the methods). This yields the Canadian mammalian
+food web, consisting of 223 species and approximately 6000 interactions
+(refer either to fig 1 or 2?).
 
 > Figure 2: A: Possibly ROC-AUC, B: Body mass, C: omnivory (unless we have this
 > as panels in fig 1)
 
 *The validity of the knowledge:*
 At face value this technique is shown to perform excellently (fig 2) 
-it does raise the question of validation techniques with regards to 
-biological plausibility. In the absence of empirical data to use as a 
-test/validation dataset we need to turn to ecological concepts as a means 
-of validating model outputs. For example using the estimated body size 
+however it does raise the question as to how we can validate the predicted 
+network if we were to extend this workflow to a region where we have no 
+data. We can turn to ecological concepts as a means 
+of validating model outputs *e.g.* using the estimated body size 
 relationships between predator and prey [@Brose2006ConRes] or looking 
-at network structure/motifs [**more on this**] as well as using other 
+at network structure/motifs (**ref**), as well as using other 
 predictions of network structure *e.g.* number of links 
 [@MacDonald2020RevLina] and comparing those to the predicted network 
-could be used as an 
-indication of the ecological validity for a predicted network (ref fig2).
+could be used as an indication of the ecological validity for a 
+predicted network (ref fig2).
 As a caveat even if we were to have an 
 empirical dataset we need to query the completeness of that dataset 
 given that observations may be overlooked in the field *e.g.*
@@ -91,9 +78,8 @@ using a similar pairwise learning approach @Stock2021PaiLea made
 predictions for interactions that had previously been unobserved in their 
 network. This does also raise the possibility of using this transfer 
 learning *within* a dataset as a means of evaluating its completeness 
-as well as filling in potential gaps. (**I think this is valid???**). 
-
-**This section can be set up can be better**
+as well as filling in potential gaps. 
+**Depending on our overlap with the Newfoundland network we can weave those results in here as well**
 
 *Future directions:*
 In our use-case we are predicting a new network using a network for which 
@@ -104,9 +90,7 @@ predictive performance with a decline in overlap? Our species pool was
 constrained to only mammals - again what happens when we start to 
 incorporate a greater diversity taxa?
 
-**What is the plausibility of using this as a means of supplementing/'fixing' current datasets to account for unobserved interactions i.e. false negatives??**
-
-**Also the idea/feasibility of reconstruction i.e. historic networks**
+**The idea/feasibility of reconstruction i.e. historic networks**
 
 **Lack of interaction strength - we only work with binary - should be fine since SVD takes $\mathbb{R}$ numbers along with $\mathbb{B}$**
 
