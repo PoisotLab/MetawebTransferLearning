@@ -38,10 +38,10 @@ interaction network (Fig 1).
 
 *Embedding the knowledge:*
 Using a truncated singular value decomposition (*t-SVD*) of the European 
-metaweb to reduce dimensionality, we are able to extract the left and right
-subspaces which are the latent traits of predator and prey species respectively. 
-We then map these latent traits to the mammalian phylogenetic 
-tree *i.e* matching traits to the phylogeny. For species shared between 
+metaweb, we are able to extract the left and right
+subspaces - representing the latent traits of predator and prey species respectively. 
+We then map these latent traits to the phylogenetic 
+tree *i.e* matching latent traits to the phylogeny. For species shared between 
 Europe and Canada it is possible to directly infer their latent traits.
 For novel species, we reconstruct their latent traits by averaging the 
 values of those of their three closest neighbours (based on the cophenetic 
@@ -55,7 +55,7 @@ Canadian community. Leveraging the predictive potential from *t-SVD*
 subspaces as well as a random dot product graph (RDPG), we multiply the 
 inferred left and right Canadian subspaces at a given threshold to predict 
 the mammalian Canadian metaweb (see the extended methods for a more 
-comprehensive breakdown of the methods). This yields the Canadian mammalian
+comprehensive breakdown of the methods). This yields a Canadian mammalian
 food web, consisting of 223 species and approximately 6000 interactions
 (refer either to fig 1 or 2?).
 
@@ -63,37 +63,30 @@ food web, consisting of 223 species and approximately 6000 interactions
 > as panels in fig 1)
 
 *The validity of the knowledge:*
-At face value this technique is shown to perform excellently (fig 2) 
-however it does raise the question as to how we can validate the predicted 
-network if we were to extend this workflow to a region where we have no 
-data. We can turn to ecological concepts as a means 
+At face value this technique is shown to perform excellently when 
+compared to a known network for Newfoundland [@Strong2014ImpNon; fig 2]. 
+However, if we were to extend this workflow to a region where we have no 
+data it does raise the question as to how we can validate the predicted 
+network. Turning to ecological concepts and relationships as a means 
 of validating model outputs *e.g.* using the estimated body size 
 relationships between predator and prey [@Brose2006ConRes] or looking 
 at network structure/motifs (**ref**), as well as using other 
 predictions of network structure *e.g.* number of links 
-[@MacDonald2020RevLina] and comparing those to the predicted network 
-could be used as an indication of the ecological validity for a 
-predicted network (ref fig2).
-As a caveat even if we were to have an 
-empirical dataset we need to query the completeness of that dataset 
-given that observations may be overlooked in the field *e.g.*
-@Stock2021PaiLea made predictions for interactions that had been unobserved in the 
-network. This does also raise the possibility of using this transfer 
-learning *within* a dataset as a means of evaluating its completeness 
-as well as filling in potential gaps. 
-**Depending on our overlap with the Newfoundland network we can weave those results in here as well**
+[@MacDonald2020RevLina] may be a promising alternative (ref fig2). 
+A lack of an obvious approach to validating model outputs in the absence 
+of empirical data suggests a need to place a greater focus on the 
+mechanistic drivers of interactions between species. *I too am judging this statement*
 
 *Future directions:*
-In our use-case we are predicting a new network using a network for which 
-there is a fair amount of phylogenetic overlap between species to very 
-successful results. However, the question remains as to the efficacy of 
-this methodology when the overlap decreases - do we see a decline in 
-predictive performance with a decline in overlap? Our species pool was 
-constrained to only mammals - again what happens when we start to 
-incorporate a greater diversity taxa?
-
-**The idea/feasibility of reconstruction i.e. historic networks**
-
-**Lack of interaction strength - we only work with binary - should be fine since SVD takes $\mathbb{R}$ numbers along with $\mathbb{B}$**
-
-**Differences in diet in different region - but so different that there is actually no overlap... different populations of the same species i.e. phylogeny might not catch this**
+Although we present a very compelling use-case for network embedding to 
+make network predictions there is the caveat that our two species pools 
+share a fair amount of phylogenetic overlap and are restricted to the same 
+class and the question remains if this methodology can 'scale-up' to more 
+disparate communities or more branches of the tree of life. There is also 
+a need to validate alternative approaches to model validation if we are 
+to maximise the potential of using network embedding to make predictions 
+for data deficient localities. Caveats aside, network embedding has the 
+potential extend its use-case beyond predicting across space and could 
+be used to transfer knowledge across time *i.e.* reconstruct historic 
+networks or as a means of validating empirical networks by detecting 
+interactions that may have been unobserved in the field.
