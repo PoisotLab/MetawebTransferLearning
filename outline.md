@@ -4,14 +4,18 @@ The extreme difficulty in documenting species interactions
 and being able to build networks poses a considerable 
 challenge to understanding the emergent properties of ecological communities
 [@Jordano2016SamNet; @Jordano2016ChaEco].
-Real world datasets are sparse and geographically 
-biased [@Poisot2021GloKno]. Here we reconstruct the 
-mammalian Canadian food web using interaction data from the 
-European metaweb, network embedding, a species list 
-and the mammalian phylogenetic tree. Thereby highlighting 
-this as both a data and computationally inexpensive methodology 
-for predicting interaction networks for which there is no data.
+With the added challenge that real world datasets are sparse 
+and geographically biased [@Poisot2021GloKno]. Here, using 
+interaction data from the European metaweb, a species list 
+and the mammalian phylogenetic tree along with network embedding 
+we are able reconstruct a mammalian Canadian food web. This 
+knowledge transfer approach is computationally inexpensive 
+and can help us make predictions when local data are missing 
+by leveraging the fact that traits are conserved at the 
+phylogenetic level and determine the nature of an interaction 
+between species.
 **Do we throw a sentence in here about validation?**
+**I feel like we need to bring up the Stock 2021 paper somehow**
 
 The probability of an interaction occurring between two species depends 
 on a set of conditions being met, i) they need to co-occur
@@ -20,12 +24,11 @@ or physical traits [@Jordano2016SamNet]. This trait-driven selection
 results in interactions being conserved at the evolutionary level and, 
 by extension, the phylogeny, which can be used to infer interactions 
 between species [@Davies2021EcoRed; @Elmasri2020HieBay; @Gomez2010EcoInt]. 
-Using a known interaction network we can *learn* which traits are determining 
-what interactions between those species. This knowledge is then *transferred* 
-to a different species pool using their phylogenetic relationship (relatedness) 
-with the original species to infer traits, and by extension, the likelihood of 
-an interaction occurring (Fig 1). 
-**I think we need to mention that we are working with latent traits somehow...**
+Using a known interaction network we can *learn* which latent traits are determining 
+what interactions between species. This knowledge is then *transferred* 
+to a different species pool using phylogenetic relatedness 
+infer their latent traits, this is then used to predict the 
+interaction network (Fig 1).
 
 > Figure 1: A: We have a workflow overview which we can potentially 
 > subdivide/section to follow the narrative more closely. B: The Euro 
@@ -74,8 +77,7 @@ predicted network (ref fig2).
 As a caveat even if we were to have an 
 empirical dataset we need to query the completeness of that dataset 
 given that observations may be overlooked in the field *e.g.*
-using a similar pairwise learning approach @Stock2021PaiLea made 
-predictions for interactions that had previously been unobserved in their 
+@Stock2021PaiLea made predictions for interactions that had been unobserved in the 
 network. This does also raise the possibility of using this transfer 
 learning *within* a dataset as a means of evaluating its completeness 
 as well as filling in potential gaps. 
