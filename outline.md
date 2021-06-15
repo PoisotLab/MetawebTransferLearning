@@ -30,11 +30,8 @@ to a different species pool using phylogenetic relatedness
 infer their latent traits, this is then used to predict the 
 interaction network (Fig 1).
 
-> Figure 1: A: We have a workflow overview which we can potentially 
-> subdivide/section to follow the narrative more closely. B: The Euro 
-> network C: The CA network???
+> Figure 1: unravel (unspooled?) plot (omnivory)
 
-*Retcon I think we should just have the conceptual figure here and have results relegated to figure 2?*
 
 *Embedding the knowledge:*
 Using a truncated singular value decomposition (*t-SVD*) of the European 
@@ -54,13 +51,19 @@ we are also reconstructing the left and right subspaces for the
 Canadian community. Leveraging the predictive potential from *t-SVD* 
 subspaces as well as a random dot product graph (RDPG), we multiply the 
 inferred left and right Canadian subspaces at a given threshold to predict 
-the mammalian Canadian metaweb (see the extended methods for a more 
+the mammalian Canadian food web (see the extended methods for a more 
 comprehensive breakdown of the methods). This yields a Canadian mammalian
 food web, consisting of 223 species and approximately 6000 interactions
 (refer either to fig 1 or 2?).
 
 > Figure 2: A: Possibly ROC-AUC, B: Body mass, C: omnivory (unless we have this
 > as panels in fig 1)
+
+*Statistical validation*
+Here we talk about 'statistical' ways we can validate the model outputs
+
+*Biological validation*
+Here we talk about biological validity of the model outputs
 
 *The validity of the knowledge:*
 At face value this technique is shown to perform excellently when 
@@ -79,7 +82,7 @@ mechanistic drivers of interactions between species. *I too am judging this stat
 
 *Future directions:*
 Although we present a very compelling use-case for network embedding to 
-make network predictions there is the caveat that our two species pools 
+make network predictions there is the limitation that our two species pools 
 share a fair amount of phylogenetic overlap and are restricted to the same 
 class and the question remains if this methodology can 'scale-up' to more 
 disparate communities or more branches of the tree of life. There is also 
@@ -90,3 +93,6 @@ potential extend its use-case beyond predicting across space and could
 be used to transfer knowledge across time *i.e.* reconstruct historic 
 networks or as a means of validating empirical networks by detecting 
 interactions that may have been unobserved in the field.
+
+As a supplement to partially sampled networks? [@Poisot2021ImpMam]
+
