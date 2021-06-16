@@ -32,7 +32,7 @@ for i in 1:size(eurometa, 1)
 end
 
 # Partition the metaweb into two latent subspaces
-L, R = rdpg(M, 5)
+L, R = rdpg(M, 8)
 
 treeleaves = tipLabels(tree_net)
 
@@ -77,10 +77,11 @@ traits = leftjoin(traits, traits_R; on=:tipNames)
 
 imputedtraits = DataFrame(;
     tipNames=[treeleaves; fill(missing, tree_net.numNodes - tree_net.numTaxa)]
-);
+)
 
-Threads.@threads for coord in 1:size(L,2)
+for coord in 1:size(L,2)
     for prefix in ["L", "R"]
+        @info "Reconstructing $(prefix)$(coord)"
         lower, upper, mean_trait = leaf_traits_reconstruction(
             traits[!, ["$(prefix)$(coord)", "tipNames"]],
             tree_net
@@ -94,42 +95,45 @@ end
 # We save the reconstructed values
 canadian_rec = innerjoin(dropmissing(imputedtraits), pool; on=:tipNames)
 
-l = Array(canadian_rec_L[!, ["x1mean", "x2mean", "x3mean", "x4mean", "x5mean"]])
+# TODO add the reference values from the European metaweb if they are known
 
-r = transpose(Array(canadian_rec_R[!, ["x1mean", "x2mean", "x3mean", "x4mean", "x5mean"]]))
+# Get the left and right subspaces (and the lower and upper values)
+𝓁 = Array(canadian_rec[!, leftnames.*"_mean"])
+𝓇 = transpose(Array(canadian_rec[!, rightnames.*"_mean"]))
 
-lₗ = Array(canadian_rec_L[!, ["x1low", "x2low", "x3low", "x4low", "x5low"]])
+𝓁ₗ= Array(canadian_rec[!, leftnames.*"_low"])
+𝓇ₗ = transpose(Array(canadian_rec[!, rightnames.*"_low"]))
 
-lᵤ = Array(canadian_rec_L[!, ["x1up", "x2up", "x3up", "x4up", "x5up"]])
+𝓁ᵤ = Array(canadian_rec[!, leftnames.*"_up"])
+𝓇ᵤ = transpose(Array(canadian_rec[!, rightnames.*"_up"]))
 
-rₗ = transpose(Array(canadian_rec_R[!, ["x1low", "x2low", "x3low", "x4low", "x5low"]]))
-
-rᵤ = transpose(Array(canadian_rec_R[!, ["x1up", "x2up", "x3up", "x4up", "x5up"]]))
-
-ld = Matrix{Uniform}(undef, size(l))
-for i in eachindex(ld)
-    ld[i] = Uniform(lₗ[i], lᵤ[i])
+ℒ = Matrix{Uniform}(undef, size(𝓁))
+for i in eachindex(ℒ)
+    ℒ[i] = Uniform(𝓁ₗ[i], 𝓁ᵤ[i])
 end
 
-rd = Matrix{Uniform}(undef, size(r))
-for i in eachindex(rd)
-    rd[i] = Uniform(rₗ[i], rᵤ[i])
+ℛ = Matrix{Uniform}(undef, size(𝓇))
+for i in eachindex(ℛ)
+    ℛ[i] = Uniform(𝓇ₗ[i], 𝓇ᵤ[i])
 end
 
 draws = 20_000
 
-Ld = [rand.(ld) for i in 1:draws]
-Rd = [rand.(rd) for i in 1:draws]
+𝐋 = [rand.(ℒ) for i in 1:draws]
+𝐑 = [rand.(ℛ) for i in 1:draws]
 
-Ns = [(Ld[i] * Rd[i]) .> 0.11 for i in 1:length(Ld)]
+# TODO set the correct threshold
+Ns = [(𝐋[i] * 𝐑[i]) .> 0.22 for i in 1:length(𝐋)]
 P = UnipartiteProbabilisticNetwork(
-    reduce(.+, Ns) ./ draws, replace.(canadian_rec_L.tipNames, "_" => " ")
+    reduce(.+, Ns) ./ draws, replace.(canadian_rec.tipNames, "_" => " ")
 )
 
 sort(interactions(P); by=(x) -> x.probability, rev=true)
 
 histogram([x.probability for x in interactions(P)])
+
 heatmap(adjacency(P))
 
 omn = omnivory.(rand(P, 100))
+
 O = Dict{String,Float64}([sp => mean([o[sp] for o in omn]) for sp in species(P)])
