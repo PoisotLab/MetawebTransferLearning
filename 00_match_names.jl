@@ -1,25 +1,28 @@
 using Phylo
 using GBIF
 using DataFrames
-import CSV
+using CSV: CSV
 using ProgressMeter
 using DelimitedFiles
 using Base.Threads
 
 metaweb_names = String.(readdlm(joinpath("data", "Spp_Id.txt")))
-mammal_positions = findall(startswith("M"), metaweb_names[:,1])
+mammal_positions = findall(startswith("M"), metaweb_names[:, 1])
 mammal_names = metaweb_names[mammal_positions, 2]
 
-gbif_cleanup_components = [DataFrame(code=String[], gbifname=String[], gbifid=Int64[], equal=Bool[]) for i in 1:nthreads()]
+gbif_cleanup_components = [
+    DataFrame(; code=String[], gbifname=String[], gbifid=Int64[], equal=Bool[]) for
+    i in 1:nthreads()
+]
 
 p = Progress(length(mammal_names))
 @threads for i in 1:length(mammal_names)
     cname = replace(mammal_names[i], '_' => ' ')
     try
-        tax = GBIF.taxon(cname; strict=false, class="Mammalia")  
+        tax = GBIF.taxon(cname; strict=false, class="Mammalia")
         push!(
             gbif_cleanup_components[threadid()],
-            (mammal_names[i], tax.species[1], tax.species[2], cname == tax.species[1])
+            (mammal_names[i], tax.species[1], tax.species[2], cname == tax.species[1]),
         )
     catch
         continue
