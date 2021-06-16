@@ -32,7 +32,7 @@ for i in 1:size(eurometa, 1)
 end
 
 # Partition the metaweb into two latent subspaces
-L, R = rdpg(M, 21)
+L, R = rdpg(M, 5)
 
 treeleaves = tipLabels(tree_net)
 
@@ -56,45 +56,43 @@ metawab_usnames ∩ canmammals
 filter((x) -> (x) ∉ (metawab_usnames ∩ treeleaves), metawab_usnames)
 
 traitframe = DataFrame(; tipNames=treeleaves)
+
 matching_tree_reconstruction = DataFrame(;
     tipNames=treeleaves, nodeNumber=range(1, length(treeleaves); step=1)
 )
 
-traits_L = DataFrame(L, :auto)
+# Automatically name the traits with L or R prefixes
+
+leftnames = "L".*string.(1:size(L,2))
+traits_L = DataFrame(L, Symbol.(leftnames))
 traits_L[!, "tipNames"] = metawab_usnames
-traits_R = DataFrame(R', :auto)
+
+rightnames = "R".*string.(1:size(R,1))
+traits_R = DataFrame(R', rightnames)
 traits_R[!, "tipNames"] = metawab_usnames
 
-traits_L = leftjoin(traitframe, traits_L; on=:tipNames)
-traits_R = leftjoin(traitframe, traits_R; on=:tipNames)
+# Use a single dataframe for the traits
+traits = leftjoin(traitframe, traits_L; on=:tipNames)
+traits = leftjoin(traits, traits_R; on=:tipNames)
 
-Results_L = DataFrame(;
-    tipNames=[treeleaves; fill(missing, tree_net.numNodes - tree_net.numTaxa)]
-);
-Results_R = DataFrame(;
+imputedtraits = DataFrame(;
     tipNames=[treeleaves; fill(missing, tree_net.numNodes - tree_net.numTaxa)]
 );
 
 Threads.@threads for coord in 1:size(L,2)
-    lower, upper, mean_trait = leaf_traits_reconstruction(
-        traits_L[!, ["x$(coord)", "tipNames"]], tree_net
-    )
-    Results_L[!, "x$(coord)low"] = lower
-    Results_L[!, "x$(coord)up"] = upper
-    Results_L[!, "x$(coord)mean"] = mean_trait
+    for prefix in ["L", "R"]
+        lower, upper, mean_trait = leaf_traits_reconstruction(
+            traits[!, ["$(prefix)$(coord)", "tipNames"]],
+            tree_net
+        )
+        imputedtraits[!, "$(prefix)$(coord)_low"] = lower
+        imputedtraits[!, "$(prefix)$(coord)_up"] = upper
+        imputedtraits[!, "$(prefix)$(coord)_mean"] = mean_trait
+    end
 end
 
-Threads.@threads for coord in 1:size(R,1)
-    lower, upper, mean_trait = leaf_traits_reconstruction(
-        traits_R[!, ["x$(coord)", "tipNames"]], tree_net
-    )
-    Results_R[!, "x$(coord)low"] = lower
-    Results_R[!, "x$(coord)up"] = upper
-    Results_R[!, "x$(coord)mean"] = mean_trait
-end
-
-canadian_rec_L = innerjoin(dropmissing(Results_L), pool; on=:tipNames)
-canadian_rec_R = innerjoin(dropmissing(Results_R), pool; on=:tipNames)
+# We save the reconstructed values
+canadian_rec = innerjoin(dropmissing(imputedtraits), pool; on=:tipNames)
 
 l = Array(canadian_rec_L[!, ["x1mean", "x2mean", "x3mean", "x4mean", "x5mean"]])
 
