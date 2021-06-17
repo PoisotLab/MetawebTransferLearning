@@ -67,7 +67,7 @@ yaxis!("Cumulative variance explained", (0, 1.0))
 savefig("figures/varexplained.png")
 
 # Partition the metaweb into two latent subspaces, using enough dimensions
-# to get 60% of variance
+# to explain 60% of variance
 L, R = rdpg(M, 12)
 
 # Get the correct threshold
@@ -145,22 +145,6 @@ traits_R[!, "tipNames"] = metaweb_can_names
 traits = leftjoin(traitframe, traits_L; on=:tipNames)
 traits = leftjoin(traits, traits_R; on=:tipNames)
 
-# Check Pagel's λ for every trait
-# The idea is that there is no point in using phylogeny to transfer information
-# that has no phylogenetic signal
-
-Λ = zeros(Float64, (2, size(L, 2)))
-
-@showprogress for (i,s) in enumerate(["L", "R"])
-    for r in 1:size(L,2)
-        var = "$(s)$(r)"
-        frm = @eval(@formula($(Meta.parse(var))~1))
-        mod = phylolm(frm , dropmissing(traits), tree_net; model="lambda")
-        Λ[i,r] = lambda_estim(mod)
-    end
-end
-
-
 # Imputed traits dataframe
 imputedtraits = DataFrame(;
     tipNames=[treeleaves; fill(missing, tree_net.numNodes - tree_net.numTaxa)]
@@ -213,6 +197,9 @@ Ns = [(𝐋[i] * 𝐑[i]) .> threshold for i in 1:length(𝐋)]
 P = UnipartiteProbabilisticNetwork(
     reduce(.+, Ns) ./ draws, replace.(canadian_rec.tipNames, "_" => " ")
 )
+
+# Deterministic version
+N = UnipartiteNetwork(𝓁*𝓇 .>= threshold, replace.(canadian_rec.tipNames, "_" => " "))
 
 sort(interactions(P); by=(x) -> x.probability, rev=true)
 
