@@ -32,3 +32,18 @@ diet = DataFrame(; from=String[], to=String[])
     end
 end
 diet = unique(diet)
+
+intcode = canmet.from.*canmet.to
+diet.intcode = diet.from.*diet.to
+
+missedint = select(diet[findall([!(d in intcode) for d in diet.intcode]),:], [:from, :to])
+
+aug = leftjoin(missedint, canmet; on = [:from, :to])
+aug.score .= 1.0
+
+inflated = vcat(canmet, aug)
+
+sort!(inflated, [:score, :from, :to], rev=[true, false, false])
+
+# Save the corrected network 
+CSV.write("artifacts/canadian_inflated.csv", inflated)
