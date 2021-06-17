@@ -1,7 +1,8 @@
 using PhyloNetworks
+using LinearAlgebra
 using EcologicalNetworks
 using DelimitedFiles
-using Plots
+using StatsPlots
 using StatsBase
 using Statistics
 using SparseArrays
@@ -13,6 +14,9 @@ using Base.Threads
 using StatsBase
 using StatsModels
 using Distributions
+
+theme(:mute)
+default(; frame=:box)
 
 # Get ancillary functions
 include("lib/pwar.jl")
@@ -31,9 +35,75 @@ for i in 1:size(eurometa, 1)
     M[eurometa[i, :]...] = true
 end
 
-# Partition the metaweb into two latent subspaces
-L, R = rdpg(M, 8)
+# Read the metaweb
+eurometa = readdlm(joinpath("artifacts", "europeanmetaweb.csv"), ',', String)
+mwspecies = unique(eurometa)
+M = UnipartiteNetwork(zeros(Bool, length(mwspecies), length(mwspecies)), mwspecies)
+for i in 1:size(eurometa, 1)
+    M[eurometa[i, :]...] = true
+end
 
+# Get the correct rank to cut the matrix at
+rnk = rank(Array(M.edges))
+eig = svd(M).S[1:rnk]
+neig = eig./sum(eig)
+
+# Plot the eigenvalues
+scatter(eig, lab="", dpi=600, size=(500,500))
+xaxis!("Dimension", (1,38))
+yaxis!("Eigenvalue", (0, 40))
+savefig("figures/screeplot.png")
+
+# Plot the variance explained
+scatter(cumsum(neig), lab="", dpi=600, size=(500,500))
+for ve in [0.5, 0.6, 0.7, 0.8, 0.9]
+    i = findfirst(cumsum(neig) .> ve)
+    x = cumsum(neig)[i]
+    plot!([0, i, NaN, i, i], [x, x, NaN, x, 0], lab="", c=:grey, ls=:dash)
+end
+xaxis!("Dimension", (1,38))
+yaxis!("Cumulative variance explained", (0, 1.0))
+savefig("figures/varexplained.png")
+
+# Partition the metaweb into two latent subspaces, using enough dimensions
+# to get 60% of variance
+L, R = rdpg(M, 12)
+
+# Get the correct threshold
+A = adjacency(M)
+thresholds = LinRange(extrema(L * R)..., 500)
+tp = zeros(Float64, length(thresholds))
+tn = similar(tp)
+fp = similar(tp)
+fn = similar(tp)
+for (i, t) in enumerate(thresholds)
+    PN = (L * R) .>= t
+    tp[i] = sum((A) .& (PN)) / sum(A)
+    tn[i] = sum((.!(A)) .& (.!(PN))) / sum(.!(A))
+    fp[i] = sum((.!(A)) .& (PN)) / sum(.!(A))
+    fn[i] = sum((A) .& (.!(PN))) / sum(A)
+end
+
+Y = tp .+ tn .- 1
+maxY, posY = findmax(Y)
+threshold = thresholds[posY]
+
+plot(thresholds, Y, lw=0.0, fill=(0, 0.2), lab="", dpi=600, size=(500,500))
+scatter!([threshold], [maxY], lab="", c=:darkgrey, msw=0.0)
+yaxis!("Youden's J", (0,1))
+xaxis!("Cutoff", extrema(L*R))
+savefig("figures/optimalcutoff.png")
+
+# Plot the subspaces
+plot(
+     heatmap(L, c=:Greys, frame=:none, cbar=false),
+     heatmap(R', c=:Greys, frame=:none, cbar=false),
+     dpi=600,
+     size=(500,400)
+    )
+savefig("figures/subspaces.png")
+
+# Get the species names
 treeleaves = tipLabels(tree_net)
 
 canada = DataFrame(CSV.File(joinpath("artifacts", "iucn_gbif_names.csv")))
@@ -45,15 +115,14 @@ csp = dropmissing(leftjoin(csp, tree_cleanup; on=:gbifname))
 
 canmammals = unique(csp.code)
 
-## Here I diverge from Tim, who does k=3 phylogenetic kmeans
-
+# We start getting a species pool to infer the traits
 pool = DataFrame(; tipNames=canmammals)
 
-metawab_usnames = replace.(M.S, " " => "_")
-metawab_usnames ∩ canmammals
+metaweb_can_names = replace.(M.S, " " => "_")
+metaweb_can_names ∩ canmammals
 
 #### I am missing some species from the metaweb
-filter((x) -> (x) ∉ (metawab_usnames ∩ treeleaves), metawab_usnames)
+filter((x) -> (x) ∉ (metaweb_can_names ∩ treeleaves), metaweb_can_names)
 
 traitframe = DataFrame(; tipNames=treeleaves)
 
@@ -65,20 +134,27 @@ matching_tree_reconstruction = DataFrame(;
 
 leftnames = "L".*string.(1:size(L,2))
 traits_L = DataFrame(L, Symbol.(leftnames))
-traits_L[!, "tipNames"] = metawab_usnames
+traits_L[!, "tipNames"] = metaweb_can_names
 
 rightnames = "R".*string.(1:size(R,1))
 traits_R = DataFrame(R', rightnames)
-traits_R[!, "tipNames"] = metawab_usnames
+traits_R[!, "tipNames"] = metaweb_can_names
 
 # Use a single dataframe for the traits
 traits = leftjoin(traitframe, traits_L; on=:tipNames)
 traits = leftjoin(traits, traits_R; on=:tipNames)
 
+# Check Pagel's λ for every trait
+# The idea is that there is no point in using phylogeny to transfer information
+# that has no phylogenetic signal
+λl1 = phylolm(@formula(R1~1), dropmissing(traits), tree_net; model="lambda")
+
+# Imputed traits dataframe
 imputedtraits = DataFrame(;
     tipNames=[treeleaves; fill(missing, tree_net.numNodes - tree_net.numTaxa)]
 )
 
+# Imputation loop!
 for coord in 1:size(L,2)
     for prefix in ["L", "R"]
         @info "Reconstructing $(prefix)$(coord)"
@@ -94,8 +170,6 @@ end
 
 # We save the reconstructed values
 canadian_rec = innerjoin(dropmissing(imputedtraits), pool; on=:tipNames)
-
-# TODO add the reference values from the European metaweb if they are known
 
 # Get the left and right subspaces (and the lower and upper values)
 𝓁 = Array(canadian_rec[!, leftnames.*"_mean"])
@@ -122,8 +196,8 @@ draws = 20_000
 𝐋 = [rand.(ℒ) for i in 1:draws]
 𝐑 = [rand.(ℛ) for i in 1:draws]
 
-# TODO set the correct threshold
-Ns = [(𝐋[i] * 𝐑[i]) .> 0.22 for i in 1:length(𝐋)]
+# We get the thresholded networks here
+Ns = [(𝐋[i] * 𝐑[i]) .> threshold for i in 1:length(𝐋)]
 P = UnipartiteProbabilisticNetwork(
     reduce(.+, Ns) ./ draws, replace.(canadian_rec.tipNames, "_" => " ")
 )
@@ -132,8 +206,46 @@ sort(interactions(P); by=(x) -> x.probability, rev=true)
 
 histogram([x.probability for x in interactions(P)])
 
-heatmap(adjacency(P))
+sporder = sortperm(vec(sum(adjacency(P); dims=2)))
+h1 = heatmap(adjacency(P)[sporder, sporder], c=:YlGnBu, frame=:none, cbar=false, dpi=600, size=(500, 500), aspectratio=1)
 
-omn = omnivory.(rand(P, 100))
+sporder = sortperm(vec(sum(adjacency(M); dims=2)))
+h2 = heatmap(adjacency(M)[sporder,sporder], c=:Greys, frame=:none, cbar=false, dpi=600, size=(500,500), aspectratio=1)
 
-O = Dict{String,Float64}([sp => mean([o[sp] for o in omn]) for sp in species(P)])
+plot(h2, h1, size=(1000,500))
+savefig("figures/adjacencymatrices.png")
+
+output = DataFrame(from = String[], to = String[], score = Float64[], pair = Bool[], int = Bool[])
+for int in interactions(P)
+    pair = (int.from in species(M)) & (int.to in species(M))
+    mint = pair ? M[int.from, int.to] : false
+    push!(output, (
+        int.from, int.to, int.probability, pair, mint
+    ))
+end
+
+# Save the basic network (no corrections)
+CSV.write("artifacts/canadian_uncorrected.csv", output)
+
+# Corrections assuming
+# - if species don't interact in Europe, no interaction in Canada
+# - if species interact in Europe, interaction in Canada
+N = copy(P)
+shared_species = filter(s -> s in species(M), species(P))
+for s1 in shared_species
+    for s2 in shared_species
+        N[s1,s2] = M[s1,s2] ? 1.0 : 0.0
+    end
+end
+SparseArrays.dropzeros!(N.edges)
+simplify!(N)
+
+# Final metaweb
+final = DataFrame(from = String[], to = String[], score = Float64[])
+for int in interactions(N)
+    push!(final, (int.from, int.to, int.probability))
+end
+sort!(final, [:score, :from, :to], rev=[true, false, false])
+
+# Save the corrected network 
+CSV.write("artifacts/canadian_corrected.csv", final)
