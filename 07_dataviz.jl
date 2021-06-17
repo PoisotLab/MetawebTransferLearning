@@ -1,8 +1,11 @@
 using DelimitedFiles
+using ProgressMeter
+using Statistics
 using Plots
 using EcologicalNetworks
 using EcologicalNetworksPlots
 using DataFrames
+using CSV
 
 eurometa = readdlm(joinpath("artifacts", "europeanmetaweb.csv"), ',', String)
 mwspecies = unique(eurometa)
@@ -11,36 +14,48 @@ for i in 1:size(eurometa, 1)
     M[eurometa[i, :]...] = true
 end
 
-canmeta = readdlm(joinpath("artifacts", "canadianmetaweb.csv"), ',', String)
-mwspecies = unique(canmeta)
-N = UnipartiteNetwork(zeros(Bool, length(mwspecies), length(mwspecies)), mwspecies)
-for i in 1:size(canmeta, 1)
-    N[canmeta[i, :]...] = true
+canmeta = DataFrame(CSV.File("artifacts/canadian_inflated.csv"))
+mwspecies = unique(vcat(canmeta.from, canmeta.to))
+P = UnipartiteProbabilisticNetwork(
+    zeros(Float64, length(mwspecies), length(mwspecies)), mwspecies
+)
+for int in eachrow(canmeta)
+    P[int.from, int.to] = int.score
+end
+
+extrema(unique(Array(P.edges)))
+thr = collect(-3:0.1:0.0)
+lnk = zeros(Float64, length(thr))
+ric = zeros(Float64, length(thr))
+for (i,t) in enumerate(thr)
+    this = simplify(P > Float64(10.0^t))
+    lnk[i] = links(this)
+    ric[i] = richness(this)
 end
 
 # Net stats
 netstats = DataFrame(;
     species=String[],
-    generality=Int64[],
-    vulnerability=Int64[],
     omnivory=Float64[],
     tl=Float64[],
 )
-
-din = degree(N; dims=2)
-dot = degree(N; dims=1)
-omn = omnivory(N)
-trl = trophic_level(N)
-
-for s in species(N)
-    push!(netstats, (s, dot[s], din[s], omn[s], trl[s]))
+@showprogress for rep in 1:100
+    R = simplify(rand(P))
+    om = omnivory(R)
+    tl = trophic_level(R)
+    for s in species(R)
+        push!(netstats, (s, om[s], tl[s]))
+    end
 end
+
+gf = groupby(netstats, :species)
+avg = combine(gf, :omnivory => mean => :omnivory, :tl => mean => :trophiclevel)
+
+scatter(avg.omnivory, avg.trophiclevel)
 
 sort(netstats, :tl; rev=true)[1:10, :]
 
-#
-
-I = initial(UnravelledInitialLayout, N)
+I = initial(UnravelledInitialLayout, P>0.0)
 
 function random_omnivory(N::T) where {T<:UnipartiteNetwork}
     o = omnivory(N)
@@ -51,9 +66,11 @@ function random_omnivory(N::T) where {T<:UnipartiteNetwork}
 end
 
 UL = UnravelledLayout(; x=random_omnivory, y=trophic_level)
-position!(UL, I, N)
 
-plot(I, N; lab="", framestyle=:box)
+position!(UL, I, P>0.0)
+
+plot(I, P; lab="", framestyle=:box)
+
 scatter!(I, N; nodefill=degree(N), colorbar=true, framestyle=:box, dpi=600)
 xaxis!("Omnivory")
 yaxis!("Trophic level")

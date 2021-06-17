@@ -1,4 +1,5 @@
 using PhyloNetworks
+using ProgressMeter
 using LinearAlgebra
 using EcologicalNetworks
 using DelimitedFiles
@@ -147,7 +148,18 @@ traits = leftjoin(traits, traits_R; on=:tipNames)
 # Check Pagel's λ for every trait
 # The idea is that there is no point in using phylogeny to transfer information
 # that has no phylogenetic signal
-λl1 = phylolm(@formula(R1~1), dropmissing(traits), tree_net; model="lambda")
+
+Λ = zeros(Float64, (2, size(L, 2)))
+
+@showprogress for (i,s) in enumerate(["L", "R"])
+    for r in 1:size(L,2)
+        var = "$(s)$(r)"
+        frm = @eval(@formula($(Meta.parse(var))~1))
+        mod = phylolm(frm , dropmissing(traits), tree_net; model="lambda")
+        Λ[i,r] = lambda_estim(mod)
+    end
+end
+
 
 # Imputed traits dataframe
 imputedtraits = DataFrame(;
