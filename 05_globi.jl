@@ -6,7 +6,7 @@ using CSV: CSV
 
 # API info
 _globi_api = "https://api.globalbioticinteractions.org/taxon"
-relevant_types = ["eats", "preysOn", "kills"]
+relevant_types = ["eats", "preysOn"]
 
 canmet = DataFrame(CSV.File("artifacts/canadian_corrected.csv"))
 
@@ -37,6 +37,8 @@ intcode = canmet.from.*canmet.to
 diet.intcode = diet.from.*diet.to
 
 missedint = select(diet[findall([!(d in intcode) for d in diet.intcode]),:], [:from, :to])
+sort!(missedint, [:from, :to])
+CSV.write("artifacts/globi_newinteractions.csv")
 
 aug = leftjoin(missedint, canmet; on = [:from, :to])
 aug.score .= 1.0
