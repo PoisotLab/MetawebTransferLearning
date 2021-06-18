@@ -49,22 +49,22 @@ end
 # Get the correct rank to cut the matrix at
 rnk = rank(Array(M.edges))
 eig = svd(M).S[1:rnk]
-neig = eig./sum(eig)
+neig = eig ./ sum(eig)
 
 # Plot the eigenvalues
-scatter(eig, lab="", dpi=600, size=(500,500))
-xaxis!("Dimension", (1,38))
+scatter(eig; lab="", dpi=600, size=(500, 500))
+xaxis!("Dimension", (1, 38))
 yaxis!("Eigenvalue", (0, 40))
 savefig("figures/screeplot.png")
 
 # Plot the variance explained
-scatter(cumsum(neig), lab="", dpi=600, size=(500,500))
+scatter(cumsum(neig); lab="", dpi=600, size=(500, 500))
 for ve in [0.5, 0.6, 0.7, 0.8, 0.9]
     i = findfirst(cumsum(neig) .> ve)
     x = cumsum(neig)[i]
-    plot!([0, i, NaN, i, i], [x, x, NaN, x, 0], lab="", c=:grey, ls=:dash)
+    plot!([0, i, NaN, i, i], [x, x, NaN, x, 0]; lab="", c=:grey, ls=:dash)
 end
-xaxis!("Dimension", (1,38))
+xaxis!("Dimension", (1, 38))
 yaxis!("Cumulative variance explained", (0, 1.0))
 savefig("figures/varexplained.png")
 
@@ -91,19 +91,19 @@ Y = tp .+ tn .- 1
 maxY, posY = findmax(Y)
 threshold = thresholds[posY]
 
-plot(thresholds, Y, lw=0.0, fill=(0, 0.2), lab="", dpi=600, size=(500,500))
-scatter!([threshold], [maxY], lab="", c=:darkgrey, msw=0.0)
-yaxis!("Youden's J", (0,1))
-xaxis!("Cutoff", extrema(L*R))
+plot(thresholds, Y; lw=0.0, fill=(0, 0.2), lab="", dpi=600, size=(500, 500))
+scatter!([threshold], [maxY]; lab="", c=:darkgrey, msw=0.0)
+yaxis!("Youden's J", (0, 1))
+xaxis!("Cutoff", extrema(L * R))
 savefig("figures/optimalcutoff.png")
 
 # Plot the subspaces
 plot(
-     heatmap(L, c=:Greys, frame=:none, cbar=false),
-     heatmap(R', c=:Greys, frame=:none, cbar=false),
-     dpi=600,
-     size=(500,400)
-    )
+    heatmap(L; c=:Greys, frame=:none, cbar=false),
+    heatmap(R'; c=:Greys, frame=:none, cbar=false);
+    dpi=600,
+    size=(500, 400),
+)
 savefig("figures/subspaces.png")
 
 # Get the species names
@@ -135,11 +135,11 @@ matching_tree_reconstruction = DataFrame(;
 
 # Automatically name the traits with L or R prefixes
 
-leftnames = "L".*string.(1:size(L,2))
+leftnames = "L" .* string.(1:size(L, 2))
 traits_L = DataFrame(L, Symbol.(leftnames))
 traits_L[!, "tipNames"] = metaweb_can_names
 
-rightnames = "R".*string.(1:size(R,1))
+rightnames = "R" .* string.(1:size(R, 1))
 traits_R = DataFrame(R', rightnames)
 traits_R[!, "tipNames"] = metaweb_can_names
 
@@ -153,12 +153,11 @@ imputedtraits = DataFrame(;
 )
 
 # Imputation loop!
-for coord in 1:size(L,2)
+for coord in 1:size(L, 2)
     for prefix in ["L", "R"]
         @info "Reconstructing $(prefix)$(coord)"
         lower, upper, mean_trait = leaf_traits_reconstruction(
-            traits[!, ["$(prefix)$(coord)", "tipNames"]],
-            tree_net
+            traits[!, ["$(prefix)$(coord)", "tipNames"]], tree_net
         )
         imputedtraits[!, "$(prefix)$(coord)_low"] = lower
         imputedtraits[!, "$(prefix)$(coord)_up"] = upper
@@ -170,22 +169,22 @@ end
 canadian_rec = innerjoin(dropmissing(imputedtraits), pool; on=:tipNames)
 
 # Get the left and right subspaces (and the lower and upper values)
-𝓁 = Array(canadian_rec[!, leftnames.*"_mean"])
-𝓇 = transpose(Array(canadian_rec[!, rightnames.*"_mean"]))
+𝓁 = Array(canadian_rec[!, leftnames .* "_mean"])
+𝓇 = transpose(Array(canadian_rec[!, rightnames .* "_mean"]))
 
 plot(
-     heatmap(𝓁, c=:Greys, frame=:none, cbar=false),
-     heatmap(𝓇', c=:Greys, frame=:none, cbar=false),
-     dpi=600,
-     size=(500,400)
-    )
+    heatmap(𝓁; c=:Greys, frame=:none, cbar=false),
+    heatmap(𝓇'; c=:Greys, frame=:none, cbar=false);
+    dpi=600,
+    size=(500, 400),
+)
 savefig("figures/imputed-subspaces.png")
 
-𝓁ₗ= Array(canadian_rec[!, leftnames.*"_low"])
-𝓇ₗ = transpose(Array(canadian_rec[!, rightnames.*"_low"]))
+𝓁ₗ = Array(canadian_rec[!, leftnames .* "_low"])
+𝓇ₗ = transpose(Array(canadian_rec[!, rightnames .* "_low"]))
 
-𝓁ᵤ = Array(canadian_rec[!, leftnames.*"_up"])
-𝓇ᵤ = transpose(Array(canadian_rec[!, rightnames.*"_up"]))
+𝓁ᵤ = Array(canadian_rec[!, leftnames .* "_up"])
+𝓇ᵤ = transpose(Array(canadian_rec[!, rightnames .* "_up"]))
 
 ℒ = Matrix{Uniform}(undef, size(𝓁))
 for i in eachindex(ℒ)
@@ -209,30 +208,44 @@ P = UnipartiteProbabilisticNetwork(
 )
 
 # Deterministic version
-N = UnipartiteNetwork(𝓁*𝓇 .>= threshold, replace.(canadian_rec.tipNames, "_" => " "))
+N = UnipartiteNetwork(𝓁 * 𝓇 .>= threshold, replace.(canadian_rec.tipNames, "_" => " "))
 
 sort(interactions(P); by=(x) -> x.probability, rev=true)
 
 histogram([x.probability for x in interactions(P)])
 
 sporder = sortperm(vec(sum(adjacency(P); dims=2)))
-h1 = heatmap(adjacency(P)[sporder, sporder], c=:YlGnBu, frame=:none, cbar=false, dpi=600, size=(500, 500), aspectratio=1)
+h1 = heatmap(
+    adjacency(P)[sporder, sporder];
+    c=:YlGnBu,
+    frame=:none,
+    cbar=false,
+    dpi=600,
+    size=(500, 500),
+    aspectratio=1,
+)
 
 sporder = sortperm(vec(sum(adjacency(M); dims=2)))
-h2 = heatmap(adjacency(M)[sporder,sporder], c=:Greys, frame=:none, cbar=false, dpi=600, size=(500,500), aspectratio=1)
+h2 = heatmap(
+    adjacency(M)[sporder, sporder];
+    c=:Greys,
+    frame=:none,
+    cbar=false,
+    dpi=600,
+    size=(500, 500),
+    aspectratio=1,
+)
 
-plot(h2, h1, size=(1000,500))
+plot(h2, h1; size=(1000, 500))
 savefig("figures/adjacencymatrices.png")
 
-output = DataFrame(from = String[], to = String[], score = Float64[], pair = Bool[], int = Bool[])
+output = DataFrame(; from=String[], to=String[], score=Float64[], pair=Bool[], int=Bool[])
 for int in interactions(P)
     pair = (int.from in species(M)) & (int.to in species(M))
     mint = pair ? M[int.from, int.to] : false
-    push!(output, (
-        int.from, int.to, int.probability, pair, mint
-    ))
+    push!(output, (int.from, int.to, int.probability, pair, mint))
 end
-sort!(output, [:score, :from, :to], rev=[true, false, false])
+sort!(output, [:score, :from, :to]; rev=[true, false, false])
 
 # Save the basic network (no corrections)
 CSV.write("artifacts/canadian_uncorrected.csv", output)
@@ -242,12 +255,21 @@ kout = degree(P; dims=1)
 kin = degree(P; dims=2)
 ordered_sp = replace.(canadian_rec.tipNames, "_" => " ")
 
-scatter(𝓁[:,1], [kout[s]/richness(P) for s in ordered_sp], dpi=600, size=(500, 500), lab="")
+scatter(
+    𝓁[:, 1], [kout[s] / richness(P) for s in ordered_sp]; dpi=600, size=(500, 500), lab=""
+)
 xaxis!("Position in the left subspace", extrema(vcat(𝓇', 𝓁)))
-yaxis!("Probabilistic generality", (0,1))
+yaxis!("Probabilistic generality", (0, 1))
 savefig("figures/left-gen.png")
 
-scatter(𝓇'[:,1], [kin[s]/richness(P) for s in ordered_sp], dpi=600, size=(500, 500), lab="", legend=:bottomright)
+scatter(
+    𝓇'[:, 1],
+    [kin[s] / richness(P) for s in ordered_sp];
+    dpi=600,
+    size=(500, 500),
+    lab="",
+    legend=:bottomright,
+)
 xaxis!("Position in the right subspace", extrema(vcat(𝓇', 𝓁)))
 yaxis!("Probabilistic vulnerability")
 savefig("figures/right-vuln.png")
@@ -259,18 +281,18 @@ N = copy(P)
 shared_species = filter(s -> s in species(M), species(P))
 for s1 in shared_species
     for s2 in shared_species
-        N[s1,s2] = M[s1,s2] ? 1.0 : 0.0
+        N[s1, s2] = M[s1, s2] ? 1.0 : 0.0
     end
 end
 SparseArrays.dropzeros!(N.edges)
 simplify!(N)
 
 # Final metaweb
-final = DataFrame(from = String[], to = String[], score = Float64[])
+final = DataFrame(; from=String[], to=String[], score=Float64[])
 for int in interactions(N)
     push!(final, (int.from, int.to, int.probability))
 end
-sort!(final, [:score, :from, :to], rev=[true, false, false])
+sort!(final, [:score, :from, :to]; rev=[true, false, false])
 
-# Save the corrected network 
+# Save the corrected network
 CSV.write("artifacts/canadian_corrected.csv", final)
