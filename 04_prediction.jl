@@ -171,6 +171,14 @@ canadian_rec = innerjoin(dropmissing(imputedtraits), pool; on=:tipNames)
 𝓁 = Array(canadian_rec[!, leftnames.*"_mean"])
 𝓇 = transpose(Array(canadian_rec[!, rightnames.*"_mean"]))
 
+plot(
+     heatmap(𝓁, c=:Greys, frame=:none, cbar=false),
+     heatmap(𝓇', c=:Greys, frame=:none, cbar=false),
+     dpi=600,
+     size=(500,400)
+    )
+savefig("figures/imputed-subspaces.png")
+
 𝓁ₗ= Array(canadian_rec[!, leftnames.*"_low"])
 𝓇ₗ = transpose(Array(canadian_rec[!, rightnames.*"_low"]))
 
@@ -222,6 +230,7 @@ for int in interactions(P)
         int.from, int.to, int.probability, pair, mint
     ))
 end
+sort!(output, [:score, :from, :to], rev=[true, false, false])
 
 # Save the basic network (no corrections)
 CSV.write("artifacts/canadian_uncorrected.csv", output)
