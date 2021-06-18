@@ -3,6 +3,7 @@ using ProgressMeter
 using LinearAlgebra
 using EcologicalNetworks
 using DelimitedFiles
+using Random
 using StatsPlots
 using StatsBase
 using Statistics
@@ -18,6 +19,7 @@ using Distributions
 
 theme(:mute)
 default(; frame=:box)
+Random.seed!(01189998819991197253)
 
 # Get ancillary functions
 include("lib/pwar.jl")
@@ -234,6 +236,21 @@ sort!(output, [:score, :from, :to], rev=[true, false, false])
 
 # Save the basic network (no corrections)
 CSV.write("artifacts/canadian_uncorrected.csv", output)
+
+# Exploration of the relationship between subspaces and network properties
+kout = degree(P; dims=1)
+kin = degree(P; dims=2)
+ordered_sp = replace.(canadian_rec.tipNames, "_" => " ")
+
+scatter(𝓁[:,1], [kout[s]/richness(P) for s in ordered_sp], dpi=600, size=(500, 500), lab="")
+xaxis!("Position in the left subspace", extrema(vcat(𝓇', 𝓁)))
+yaxis!("Probabilistic generality", (0,1))
+savefig("figures/left-gen.png")
+
+scatter(𝓇'[:,1], [kin[s]/richness(P) for s in ordered_sp], dpi=600, size=(500, 500), lab="", legend=:bottomright)
+xaxis!("Position in the right subspace", extrema(vcat(𝓇', 𝓁)))
+yaxis!("Probabilistic vulnerability")
+savefig("figures/right-vuln.png")
 
 # Corrections assuming
 # - if species don't interact in Europe, no interaction in Canada
