@@ -1,18 +1,42 @@
-using Phylo
+using PhyloNetworks
+using ProgressMeter
 using LinearAlgebra
 using EcologicalNetworks
 using DelimitedFiles
-using Plots
+using Random
+using StatsPlots
 using StatsBase
 using Statistics
+using SparseArrays
 using EcologicalNetworksPlots
 using CSV
 using DataFrames
 using GBIF
-using ProgressMeter
+using Base.Threads
+using StatsBase
+using StatsModels
+using Distributions
 
 theme(:mute)
 default(; frame=:box)
+Random.seed!(01189998819991197253)
+
+# Get ancillary functions
+include("lib/pwar.jl")
+
+# Read the tree
+tree_net = readTopology(joinpath("data", "mammals.newick"));
+
+# Read the names
+namelist = DataFrame(CSV.File(joinpath("artifacts", "names_metaweb_tree_gbif.csv")))
+
+# Prepare the metaweb
+eurometa = readdlm(joinpath("artifacts", "europeanmetaweb.csv"), ',', String)
+mwspecies = unique(eurometa)
+M = UnipartiteNetwork(zeros(Bool, length(mwspecies), length(mwspecies)), mwspecies)
+for i in 1:size(eurometa, 1)
+    M[eurometa[i, :]...] = true
+end
 
 # Read the metaweb
 eurometa = readdlm(joinpath("artifacts", "europeanmetaweb.csv"), ',', String)
@@ -25,29 +49,32 @@ end
 # Get the correct rank to cut the matrix at
 rnk = rank(Array(M.edges))
 eig = svd(M).S[1:rnk]
-eig = eig./sum(eig)
+neig = eig ./ sum(eig)
 
-𝒻 = (d, μ, σ²) -> (1.0 / (2π * σ²)) * exp(-((d - μ)^2.0) / (2σ²))
-ℒ = zeros(Float64, rnk)
+# Plot the eigenvalues
+scatter(eig; lab="", dpi=600, size=(500, 500))
+xaxis!("Dimension", (1, 38))
+yaxis!("Eigenvalue", (0, 40))
+savefig("figures/screeplot.png")
 
-for p in 2:(rnk-2)
-    θ₁ = eig[1:p]
-    θ₂ = eig[(p+1):end]
-    μ₁ = mean(θ₁)
-    μ₂ = mean(θ₂)
-    σ² = (1.0/(rnk-2))*((p-1)*var(θ₁) + (rnk-p-1)*var(θ₂))
-    𝒻₁ = (d) -> 𝒻(d, μ₁, σ²)
-    𝒻₂ = (d) -> 𝒻(d, μ₂, σ²)
-    𝓁ₚ = sum(log.(𝒻₁.(θ₁))) + sum(log.(𝒻₂.(θ₂)))
-    ℒ[p] = 𝓁ₚ 
-    @info "$(p) → $(𝓁ₚ)"
+# Plot the variance explained
+scatter(cumsum(neig); lab="", dpi=600, size=(500, 500))
+for ve in [0.5, 0.6, 0.7, 0.8, 0.9]
+    i = findfirst(cumsum(neig) .> ve)
+    x = cumsum(neig)[i]
+    plot!([0, i, NaN, i, i], [x, x, NaN, x, 0]; lab="", c=:grey, ls=:dash)
 end
+xaxis!("Dimension", (1, 38))
+yaxis!("Cumulative variance explained", (0, 1.0))
+savefig("figures/varexplained.png")
 
-# Partition the metaweb into two latent subspaces
-L, R = rdpg(M, 21)
+# Partition the metaweb into two latent subspaces, using enough dimensions
+# to explain 60% of variance
+L, R = rdpg(M, 12)
 
+# Get the correct threshold
 A = adjacency(M)
-thresholds = LinRange(extrema(L * R)..., 100)
+thresholds = LinRange(extrema(L * R)..., 500)
 tp = zeros(Float64, length(thresholds))
 tn = similar(tp)
 fp = similar(tp)
@@ -61,19 +88,27 @@ for (i, t) in enumerate(thresholds)
 end
 
 Y = tp .+ tn .- 1
-threshold = thresholds[findmax(Y)[2]]
+maxY, posY = findmax(Y)
+threshold = thresholds[posY]
 
-plot(fp, tp; lab="", aspectratio=1, xlim=(0, 1), fill=(0, 0.2), ylim=(0, 1), dpi=600)
-xaxis!("False positives")
-yaxis!("True positives")
-savefig("figures/roc.png")
+plot(thresholds, Y; lw=0.0, fill=(0, 0.2), lab="", dpi=600, size=(500, 500))
+scatter!([threshold], [maxY]; lab="", c=:darkgrey, msw=0.0)
+yaxis!("Youden's J", (0, 1))
+xaxis!("Cutoff", extrema(L * R))
+savefig("figures/optimalcutoff.png")
 
-heatmap(L * R)
-heatmap((L * R) .> threshold)
+# Plot the subspaces
+plot(
+    heatmap(L; c=:Greys, frame=:none, cbar=false),
+    heatmap(R'; c=:Greys, frame=:none, cbar=false);
+    dpi=600,
+    size=(500, 400),
+)
+savefig("figures/subspaces.png")
 
-# Get a random species pool from the tree
-tree = open(parsenexus, joinpath("data", "mammals.nex"))["*UNTITLED"]
-treenodes = [n.name for n in tree.nodes if !startswith(n.name, "Node ")]
+# Get the species names
+treeleaves = tipLabels(tree_net)
+
 canada = DataFrame(CSV.File(joinpath("artifacts", "iucn_gbif_names.csv")))
 cancodes = replace.(unique(filter(!ismissing, canada.gbifname)), " " => "_")
 tree_cleanup = DataFrame(CSV.File(joinpath("artifacts", "upham_gbif_names.csv")))
@@ -82,51 +117,182 @@ csp = dropmissing!(DataFrame(; gbifname=canada.gbifname))
 csp = dropmissing(leftjoin(csp, tree_cleanup; on=:gbifname))
 
 canmammals = unique(csp.code)
-namelist = DataFrame(CSV.File(joinpath("artifacts", "names_metaweb_tree_gbif.csv")))
 
-k = 6
-pool = canmammals
-poolsize = length(pool)
-l = zeros(Float64, poolsize, size(L, 2))
-r = permutedims(l)
-prog = Progress(length(pool))
-Threads.@threads for i in 1:length(pool)
-    target = pool[i]
-    D = [
-        distance(tree, target, first(namelist[isequal(n).(namelist.name), :upham])) for
-        n in species(M)
-    ]
-    p = sortperm(D)
-    if iszero(minimum(D))
-        r[:, i] = R[:, p][:, 1]
-        l[i, :] = L[p, :][1, :]
-    else
-        r[:, i] = mean(R[:, p][:, 1:k]; dims=2)
-        l[i, :] = mean(L[p, :][1:k, :]; dims=1)
-    end
-    next!(prog)
-end
+# We start getting a species pool to infer the traits
+pool = DataFrame(; tipNames=canmammals)
 
-P = simplify(UnipartiteQuantitativeNetwork(l * r, pool))
+metaweb_can_names = replace.(M.S, " " => "_")
+metaweb_can_names ∩ canmammals
 
-s_int = sort(
-    filter(x -> x.strength >= threshold, interactions(P)); by=(x) -> x.strength, rev=true
+#### I am missing some species from the metaweb
+filter((x) -> (x) ∉ (metaweb_can_names ∩ treeleaves), metaweb_can_names)
+
+traitframe = DataFrame(; tipNames=treeleaves)
+
+matching_tree_reconstruction = DataFrame(;
+    tipNames=treeleaves, nodeNumber=range(1, length(treeleaves); step=1)
 )
-predint = DataFrame(; predator=String[], prey=String[], evidence=Float64[])
-canpool = unique(csp.gbifname)
-N = UnipartiteNetwork(zeros(Bool, length(canpool), length(canpool)), canpool)
-for i in s_int
-    fr = first(unique(csp[csp.code .== i.from, :gbifname]))
-    to = first(unique(csp[csp.code .== i.to, :gbifname]))
-    push!(predint, (fr, to, i.strength))
-    N[fr, to] = true
+
+# Automatically name the traits with L or R prefixes
+
+leftnames = "L" .* string.(1:size(L, 2))
+traits_L = DataFrame(L, Symbol.(leftnames))
+traits_L[!, "tipNames"] = metaweb_can_names
+
+rightnames = "R" .* string.(1:size(R, 1))
+traits_R = DataFrame(R', rightnames)
+traits_R[!, "tipNames"] = metaweb_can_names
+
+# Use a single dataframe for the traits
+traits = leftjoin(traitframe, traits_L; on=:tipNames)
+traits = leftjoin(traits, traits_R; on=:tipNames)
+
+# Imputed traits dataframe
+imputedtraits = DataFrame(;
+    tipNames=[treeleaves; fill(missing, tree_net.numNodes - tree_net.numTaxa)]
+)
+
+# Imputation loop!
+for coord in 1:size(L, 2)
+    for prefix in ["L", "R"]
+        @info "Reconstructing $(prefix)$(coord)"
+        lower, upper, mean_trait = leaf_traits_reconstruction(
+            traits[!, ["$(prefix)$(coord)", "tipNames"]], tree_net
+        )
+        imputedtraits[!, "$(prefix)$(coord)_low"] = lower
+        imputedtraits[!, "$(prefix)$(coord)_up"] = upper
+        imputedtraits[!, "$(prefix)$(coord)_mean"] = mean_trait
+    end
 end
 
+# We save the reconstructed values
+canadian_rec = innerjoin(dropmissing(imputedtraits), pool; on=:tipNames)
+
+# Get the left and right subspaces (and the lower and upper values)
+𝓁 = Array(canadian_rec[!, leftnames .* "_mean"])
+𝓇 = transpose(Array(canadian_rec[!, rightnames .* "_mean"]))
+
+plot(
+    heatmap(𝓁; c=:Greys, frame=:none, cbar=false),
+    heatmap(𝓇'; c=:Greys, frame=:none, cbar=false);
+    dpi=600,
+    size=(500, 400),
+)
+savefig("figures/imputed-subspaces.png")
+
+𝓁ₗ = Array(canadian_rec[!, leftnames .* "_low"])
+𝓇ₗ = transpose(Array(canadian_rec[!, rightnames .* "_low"]))
+
+𝓁ᵤ = Array(canadian_rec[!, leftnames .* "_up"])
+𝓇ᵤ = transpose(Array(canadian_rec[!, rightnames .* "_up"]))
+
+ℒ = Matrix{Uniform}(undef, size(𝓁))
+for i in eachindex(ℒ)
+    ℒ[i] = Uniform(𝓁ₗ[i], 𝓁ᵤ[i])
+end
+
+ℛ = Matrix{Uniform}(undef, size(𝓇))
+for i in eachindex(ℛ)
+    ℛ[i] = Uniform(𝓇ₗ[i], 𝓇ᵤ[i])
+end
+
+draws = 20_000
+
+𝐋 = [rand.(ℒ) for i in 1:draws]
+𝐑 = [rand.(ℛ) for i in 1:draws]
+
+# We get the thresholded networks here
+Ns = [(𝐋[i] * 𝐑[i]) .> threshold for i in 1:length(𝐋)]
+P = UnipartiteProbabilisticNetwork(
+    reduce(.+, Ns) ./ draws, replace.(canadian_rec.tipNames, "_" => " ")
+)
+
+# Deterministic version
+N = UnipartiteNetwork(𝓁 * 𝓇 .>= threshold, replace.(canadian_rec.tipNames, "_" => " "))
+
+sort(interactions(P); by=(x) -> x.probability, rev=true)
+
+histogram([x.probability for x in interactions(P)])
+
+sporder = sortperm(vec(sum(adjacency(P); dims=2)))
+h1 = heatmap(
+    adjacency(P)[sporder, sporder];
+    c=:YlGnBu,
+    frame=:none,
+    cbar=false,
+    dpi=600,
+    size=(500, 500),
+    aspectratio=1,
+)
+
+sporder = sortperm(vec(sum(adjacency(M); dims=2)))
+h2 = heatmap(
+    adjacency(M)[sporder, sporder];
+    c=:Greys,
+    frame=:none,
+    cbar=false,
+    dpi=600,
+    size=(500, 500),
+    aspectratio=1,
+)
+
+plot(h2, h1; size=(1000, 500))
+savefig("figures/adjacencymatrices.png")
+
+output = DataFrame(; from=String[], to=String[], score=Float64[], pair=Bool[], int=Bool[])
+for int in interactions(P)
+    pair = (int.from in species(M)) & (int.to in species(M))
+    mint = pair ? M[int.from, int.to] : false
+    push!(output, (int.from, int.to, int.probability, pair, mint))
+end
+sort!(output, [:score, :from, :to]; rev=[true, false, false])
+
+# Save the basic network (no corrections)
+CSV.write("artifacts/canadian_uncorrected.csv", output)
+
+# Exploration of the relationship between subspaces and network properties
+kout = degree(P; dims=1)
+kin = degree(P; dims=2)
+ordered_sp = replace.(canadian_rec.tipNames, "_" => " ")
+
+scatter(
+    𝓁[:, 1], [kout[s] / richness(P) for s in ordered_sp]; dpi=600, size=(500, 500), lab=""
+)
+xaxis!("Position in the left subspace", extrema(vcat(𝓇', 𝓁)))
+yaxis!("Probabilistic generality", (0, 1))
+savefig("figures/left-gen.png")
+
+scatter(
+    𝓇'[:, 1],
+    [kin[s] / richness(P) for s in ordered_sp];
+    dpi=600,
+    size=(500, 500),
+    lab="",
+    legend=:bottomright,
+)
+xaxis!("Position in the right subspace", extrema(vcat(𝓇', 𝓁)))
+yaxis!("Probabilistic vulnerability")
+savefig("figures/right-vuln.png")
+
+# Corrections assuming
+# - if species don't interact in Europe, no interaction in Canada
+# - if species interact in Europe, interaction in Canada
+N = copy(P)
+shared_species = filter(s -> s in species(M), species(P))
+for s1 in shared_species
+    for s2 in shared_species
+        N[s1, s2] = M[s1, s2] ? 1.0 : 0.0
+    end
+end
+SparseArrays.dropzeros!(N.edges)
 simplify!(N)
 
-open(joinpath("artifacts", "canadianmetaweb.csv"), "w") do caio
-    for int in sort(interactions(N); by=x -> x.from)
-        println(caio, "$(int.from),$(int.to)")
-    end
+# Final metaweb
+final = DataFrame(; from=String[], to=String[], score=Float64[])
+for int in interactions(N)
+    push!(final, (int.from, int.to, int.probability))
 end
+sort!(final, [:score, :from, :to]; rev=[true, false, false])
 
+# Save the corrected network
+CSV.write("artifacts/canadian_corrected.csv", final)
