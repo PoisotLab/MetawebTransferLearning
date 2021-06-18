@@ -75,7 +75,7 @@ for i in interactions(K)
 end
 sort!(int, [:score, :from, :to]; rev=[true, false, false])
 
-CSV.write("artifacts/canadian_thresholded.csv")
+CSV.write("artifacts/canadian_thresholded.csv", int)
 
 #%% Write the functional classification of species
 rls = DataFrame(sp = String[], gen = Float64[], gen_var = Float64[], vul = Float64[], vul_var = Float64[], role = Symbol[])
@@ -93,4 +93,4 @@ for s in species(K)
 end
 
 sort!(rls, :gen, rev=true)
-CSV.write("artifacts/species_roles.csv")
+CSV.write("artifacts/species_roles.csv", rls)
