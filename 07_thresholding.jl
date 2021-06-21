@@ -41,6 +41,12 @@ for i in 2:(length(U) - 1)
     ∂L[i] = L[i + 1] + L[i - 1] - 2L[i]
 end
 
+#%% Euclidean distance for U
+dU = zeros(Float64, length(U))
+for i in eachindex(U)
+    dU[i] = sqrt(U[i]*U[i] + ρ[i]*ρ[i])
+end
+
 #%% Plot the results
 plot(ρ, U; dpi=600, size=(500, 500), lab="Non-zero")
 plot!(ρ, L; lab="Expected")
