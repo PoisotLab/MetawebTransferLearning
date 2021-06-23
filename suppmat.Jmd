@@ -1,0 +1,18 @@
+---
+title: Supplementary material
+---
+
+~~~julia
+using DataFrames
+using CSV: CSV
+using Latexify
+using LaTeXStrings
+Latexify.latexraw(s::String; kwargs...) = LaTeXString("\\text{$s}")
+~~~
+
+## List of interaction in the European metaweb
+
+~~~julia
+euro = DataFrame(CSV.File("artifacts/europeanmetaweb.csv"))
+latexify(euro; env=:mdtable)
+~~~

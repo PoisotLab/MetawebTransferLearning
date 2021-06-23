@@ -99,8 +99,8 @@ savefig("figures/optimalcutoff.png")
 
 # Plot the subspaces
 plot(
-    heatmap(L; c=:Greys, frame=:none, cbar=false),
-    heatmap(R'; c=:Greys, frame=:none, cbar=false);
+    heatmap(L; c=:GnBu, frame=:none, cbar=false),
+    heatmap(R'; c=:BuPu, frame=:none, cbar=false);
     dpi=600,
     size=(500, 400),
 )
@@ -173,8 +173,8 @@ canadian_rec = innerjoin(dropmissing(imputedtraits), pool; on=:tipNames)
 𝓇 = transpose(Array(canadian_rec[!, rightnames .* "_mean"]))
 
 plot(
-    heatmap(𝓁; c=:Greys, frame=:none, cbar=false),
-    heatmap(𝓇'; c=:Greys, frame=:none, cbar=false);
+    heatmap(𝓁; c=:GnBu, frame=:none, cbar=false),
+    heatmap(𝓇'; c=:BuPu, frame=:none, cbar=false);
     dpi=600,
     size=(500, 400),
 )
@@ -217,7 +217,7 @@ histogram([x.probability for x in interactions(P)])
 sporder = sortperm(vec(sum(adjacency(P); dims=2)))
 h1 = heatmap(
     adjacency(P)[sporder, sporder];
-    c=:YlGnBu,
+    c=:Greys,
     frame=:none,
     cbar=false,
     dpi=600,
