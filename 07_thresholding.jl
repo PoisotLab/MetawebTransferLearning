@@ -41,6 +41,12 @@ for i in 2:(length(U) - 1)
     ∂L[i] = L[i + 1] + L[i - 1] - 2L[i]
 end
 
+#%% Euclidean distance for U
+dU = zeros(Float64, length(U))
+for i in eachindex(U)
+    dU[i] = sqrt(U[i]*U[i] + ρ[i]*ρ[i])
+end
+
 #%% Plot the results
 plot(ρ, U; dpi=600, size=(500, 500), lab="Non-zero")
 plot!(ρ, L; lab="Expected")
@@ -62,7 +68,8 @@ savefig("figures/cutoff-connectance.png")
 
 #%% Get the threshold
 thrind = findlast(S .== 1)
-@info "Optimal cutoff based on central difference: $(ρ[thrind])"
+@info "Optimal cutoff based on remaining species: $(ρ[thrind])"
+@info "Optimal cutoff based on central differences: $(ρ[last(findmax(∂U))])"
 
 #%% Cleaned-up network
 K = copy(P)
@@ -94,3 +101,10 @@ end
 
 sort!(rls, :gen, rev=true)
 CSV.write("artifacts/species_roles.csv", rls)
+
+plot(log1p.(sort(rls.gen, rev=true)), lab="Out-degree", size=(500, 500), dpi=600)
+plot!(log1p.(sort(rls.vul, rev=true)), lab="In-degree")
+xaxis!("Rank", (0, 180))
+yaxis!("log(degree + 1)", (0, 5))
+
+savefig("figures/final-degree.png")
