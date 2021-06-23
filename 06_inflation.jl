@@ -79,7 +79,7 @@ density!(canmet.score; lw=0.0, fill=(0.2, 0), c=:black, lab="All predictions")
 xaxis!("Imputed probability", (0, 1))
 yaxis!("Density", (0, 8))
 
-savefig("figures/globi-nfl-comparison.png")
+savefig("figures/inflation-comparison.png")
 
 @info "NFLD : found $(size(missedslint, 1)) new interactions out of $(size(sl, 1))"
 @info "NFLD : $(length(unique(vcat(sl.from, sl.to)))) species"
