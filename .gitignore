@@ -1,3 +1,2 @@
-
-#MacOS nonsense
+*.csv#
 .DS_Store
