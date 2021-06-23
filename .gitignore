@@ -1,2 +1,8 @@
 *.csv#
+*.aux
+*.log
+*.out
+*.tex
+suppmat.html
+jl_*/
 .DS_Store

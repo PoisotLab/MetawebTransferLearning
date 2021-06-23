@@ -2,17 +2,56 @@
 title: Supplementary material
 ---
 
-~~~julia
+~~~julia; echo=false
 using DataFrames
 using CSV: CSV
 using Latexify
 using LaTeXStrings
-Latexify.latexraw(s::String; kwargs...) = LaTeXString("\\text{$s}")
 ~~~
 
-## List of interaction in the European metaweb
+This table lists the full interactions in the curated predicted Canadian
+metaweb, and indicates the probability based on the phylogenetic model,
+the interaction of the species pairs in Europe, and the interaction of the
+species pairs in the GLOBI and Newfoundland (SL) dataset.
 
-~~~julia
-euro = DataFrame(CSV.File("artifacts/europeanmetaweb.csv"))
-latexify(euro; env=:mdtable)
+~~~julia; echo=false
+glnew = DataFrame(CSV.File("artifacts/globi_diet.csv"))
+rename!(glnew, :from => :Predator)
+rename!(glnew, :to => :Prey)
+glnew.GLOBI = fill(true, size(glnew, 1));
+slnew = DataFrame(CSV.File("artifacts/newfoundland.csv"))
+rename!(slnew, :from => :Predator)
+rename!(slnew, :to => :Prey)
+slnew.Newfoundland = fill(true, size(slnew, 1));
+rename!(slnew, :Newfoundland => Symbol("SL"));
 ~~~
+
+~~~julia; echo=false, results="hidden"
+colfor(x::Missing) = ""
+colfor(x::Bool) = x ? "+" : ""
+function genusize(x::String)
+    g, s = split(x, " ")
+    return "*$(g) $(s)*"
+end
+~~~
+
+~~~julia; echo=false
+cm = DataFrame(CSV.File("artifacts/canadian_thresholded.csv"))
+cmu = DataFrame(CSV.File("artifacts/canadian_uncorrected.csv"))
+select!(cmu, [:from, :to, :int])
+cm = leftjoin(cm, cmu, on=[:from => :from, :to => :to])
+sort!(cm, [:from, :to])
+rename!(cm, :from => :Predator)
+rename!(cm, :to => :Prey)
+rename!(cm, :score => Symbol("\$P(i,j)\$"))
+cm = leftjoin(cm, slnew, on=[:Predator => :Predator, :Prey => :Prey])
+cm = leftjoin(cm, glnew, on=[:Predator => :Predator, :Prey => :Prey])
+cm.SL = [colfor(x) for x in cm.SL]
+cm.GLOBI = [colfor(x) for x in cm.GLOBI]
+cm.int = [colfor(x) for x in cm.int]
+rename!(cm, :int => Symbol("Europe"))
+cm.Predator = [genusize(x) for x in cm.Predator]
+cm.Prey = [genusize(x) for x in cm.Prey]
+latexify(cm, latex=false, env=:mdtable)
+~~~
+
