@@ -287,3 +287,42 @@ sort!(final, [:score, :from, :to]; rev=[true, false, false])
 
 # Save the corrected network
 CSV.write("artifacts/canadian_corrected.csv", final)
+
+#%% Plot
+l = @layout [
+             a{0.3w} b;
+             c{0.7h} d
+]
+
+sporder = sortperm(vec(sum(adjacency(N); dims=2)))
+
+plot(
+     plot(legend=false, axes=false, frame=:none),
+     heatmap(𝓇[:,sporder], frame=:none, legend=false, c=:BrBG, clim=(-1,1)),
+     heatmap(𝓁[sporder,:], frame=:none, legend=false, c=:PRGn, clim=(-1,1)),
+     heatmap(adjacency(N)[sporder,sporder], c=:Greys, frame=:none, legend=false),
+     layout = l,
+     size = (500,500),
+     dpi = 600
+)
+
+savefig("figures/combined-prediction.png")
+
+sporder = sortperm(vec(sum(adjacency(M); dims=2)))
+
+l = @layout [
+             a{0.3w} b;
+             c{0.7h} d
+]
+
+plot(
+     plot(legend=false, axes=false, frame=:none),
+     heatmap(R[:,sporder], frame=:none, legend=false, c=:BrBG, clim=(-1,1)),
+     heatmap(L[sporder,:], frame=:none, legend=false, c=:PRGn, clim=(-1,1)),
+     heatmap(adjacency(M)[sporder,sporder], c=:Greys, frame=:none, legend=false),
+     layout = l,
+     size = (500,500),
+     dpi = 600
+)
+
+savefig("figures/combined-empirical.png")
