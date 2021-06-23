@@ -8,7 +8,6 @@ using StatsPlots
 using StatsBase
 using Statistics
 using SparseArrays
-using EcologicalNetworksPlots
 using CSV
 using DataFrames
 using GBIF
@@ -29,14 +28,6 @@ tree_net = readTopology(joinpath("data", "mammals.newick"));
 
 # Read the names
 namelist = DataFrame(CSV.File(joinpath("artifacts", "names_metaweb_tree_gbif.csv")))
-
-# Prepare the metaweb
-eurometa = readdlm(joinpath("artifacts", "europeanmetaweb.csv"), ',', String)
-mwspecies = unique(eurometa)
-M = UnipartiteNetwork(zeros(Bool, length(mwspecies), length(mwspecies)), mwspecies)
-for i in 1:size(eurometa, 1)
-    M[eurometa[i, :]...] = true
-end
 
 # Read the metaweb
 eurometa = readdlm(joinpath("artifacts", "europeanmetaweb.csv"), ',', String)
