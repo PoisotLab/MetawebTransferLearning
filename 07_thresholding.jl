@@ -1,7 +1,6 @@
 #%% Dependencies
 using SparseArrays
 using EcologicalNetworks
-using EcologicalNetworksPlots
 using DataFrames
 using CSV: CSV
 using StatsPlots

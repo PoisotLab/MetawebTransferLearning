@@ -1,6 +1,7 @@
 from,to
 Gulo gulo,Alces alces
 Gulo gulo,Cervus elaphus
+Gulo gulo,Odocoileus hemionus
 Gulo gulo,Oreamnos americanus
 Gulo gulo,Vulpes vulpes
 Lynx canadensis,Canis latrans
@@ -11,7 +12,6 @@ Lynx rufus,Zapus trinotatus
 Martes americana,Lynx rufus
 Martes pennanti,Canis latrans
 Martes pennanti,Lasionycteris noctivagans
-Martes pennanti,Odocoileus virginianus
 Martes pennanti,Sciurus carolinensis
 Martes pennanti,Vulpes vulpes
 Martes pennanti,Zapus hudsonius
@@ -23,6 +23,7 @@ Mustela nivalis,Sciurus carolinensis
 Neovison vison,Sciurus carolinensis
 Puma concolor,Canis latrans
 Puma concolor,Lynx rufus
+Taxidea taxus,Lepus townsendii
 Taxidea taxus,Zapus hudsonius
 Ursus arctos,Canis latrans
 Ursus arctos,Canis lupus
