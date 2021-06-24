@@ -28,7 +28,8 @@ extinct_sp = map(
     sp ->
         !(
             sp ∈ [
-                "Neovison macrodon"
+                "Neovison macrodon",
+                "Enhydra lutris"
             ]
         ),
     checklist.scientificName,
