@@ -17,7 +17,8 @@ valid_rows = map(
                 "ODOBENIDAE",
                 "ZIPHIIDAE",
                 "MONODONTIDAE",
-                "ESCHRICHTIIDAE"
+                "ESCHRICHTIIDAE",
+                "KOGIIDAE"
             ]
         ),
     checklist.familyName,
