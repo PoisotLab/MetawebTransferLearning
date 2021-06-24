@@ -24,6 +24,22 @@ valid_rows = map(
 )
 checklist = checklist[findall(valid_rows), :]
 
+extinct_sp = map(
+    sp ->
+        !(
+            sp ∈ [
+                "Neovison macrodon"
+            ]
+        ),
+    checklist.scientificName,
+)
+checklist = checklist[findall(extinct_sp), :]
+
+checklist_cleanup_components = [
+    DataFrame(; code=String[], gbifname=String[], gbifid=Int64[], equal=Bool[]) for
+    i in 1:nthreads()
+]
+
 checklist_cleanup_components = [
     DataFrame(; code=String[], gbifname=String[], gbifid=Int64[], equal=Bool[]) for
     i in 1:nthreads()
