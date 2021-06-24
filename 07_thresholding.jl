@@ -43,7 +43,7 @@ end
 #%% Euclidean distance for U
 dU = zeros(Float64, length(U))
 for i in eachindex(U)
-    dU[i] = sqrt(U[i]*U[i] + ρ[i]*ρ[i])
+    dU[i] = sqrt(U[i] * U[i] + ρ[i] * ρ[i])
 end
 
 #%% Plot the results
@@ -75,7 +75,7 @@ K = copy(P)
 K.edges[P.edges .< ρ[thrind]] .= 0.0
 dropzeros!(K.edges)
 
-int = DataFrame(from = String[], to = String[], score = Float64[])
+int = DataFrame(; from=String[], to=String[], score=Float64[])
 for i in interactions(K)
     push!(int, (i.from, i.to, i.probability))
 end
@@ -84,12 +84,19 @@ sort!(int, [:score, :from, :to]; rev=[true, false, false])
 CSV.write("artifacts/canadian_thresholded.csv", int)
 
 #%% Write the functional classification of species
-rls = DataFrame(sp = String[], gen = Float64[], gen_var = Float64[], vul = Float64[], vul_var = Float64[], role = Symbol[])
+rls = DataFrame(;
+    sp=String[],
+    gen=Float64[],
+    gen_var=Float64[],
+    vul=Float64[],
+    vul_var=Float64[],
+    role=Symbol[],
+)
 
 din = degree(K; dims=2)
-dinv= degree_var(K; dims=2)
+dinv = degree_var(K; dims=2)
 dout = degree(K; dims=1)
-doutv= degree_var(K; dims=1)
+doutv = degree_var(K; dims=1)
 
 for s in species(K)
     rl = :int
@@ -98,11 +105,11 @@ for s in species(K)
     push!(rls, (s, dout[s], doutv[s], din[s], dinv[s], rl))
 end
 
-sort!(rls, :gen, rev=true)
+sort!(rls, :gen; rev=true)
 CSV.write("artifacts/species_roles.csv", rls)
 
-plot(log1p.(sort(rls.gen, rev=true)), lab="Out-degree", size=(500, 500), dpi=600)
-plot!(log1p.(sort(rls.vul, rev=true)), lab="In-degree")
+plot(log1p.(sort(rls.gen; rev=true)); lab="Out-degree", size=(500, 500), dpi=600)
+plot!(log1p.(sort(rls.vul; rev=true)); lab="In-degree")
 xaxis!("Rank", (0, 180))
 yaxis!("log(degree + 1)", (0, 5))
 

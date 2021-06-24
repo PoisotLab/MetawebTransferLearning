@@ -61,8 +61,8 @@ canmetsp = unique(vcat(canmet.from, canmet.to))
 sl = DataFrame(CSV.File("artifacts/newfoundland.csv"))
 slshared = intersect(canmetsp, unique(vcat(sl.from, sl.to)))
 
-slkeep = [(i.from in slshared)&(i.to in slshared) for i in eachrow(sl)]
-sl = sl[findall(slkeep),:]
+slkeep = [(i.from in slshared) & (i.to in slshared) for i in eachrow(sl)]
+sl = sl[findall(slkeep), :]
 
 sl.intcode = sl.from .* sl.to
 
