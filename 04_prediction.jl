@@ -326,3 +326,40 @@ plot(
 )
 
 savefig("figures/combined-empirical.png")
+
+# MaxEnt configuration model
+a = zeros(Float64, size(adjacency(P)))
+C = UnipartiteProbabilisticNetwork(a, EcologicalNetworks._species_objects(P)...)
+
+for s1 in species(P; dims=1), s2 in species(P; dims=2)
+    C[s1, s2] = 0.5(kout[s1] / richness(P) + kin[s2] / richness(P))
+end
+
+rec = 𝓁[:, 1] * hcat(𝓇'[:, 1]...)
+
+Ceff = adjacency(C)
+Cinf = rec
+
+Zeff = (Ceff .- mean(Ceff)) ./ std(Ceff)
+Zinf = (Cinf .- mean(Cinf)) ./ std(Cinf)
+
+density(sqrt.(vec(Zeff .- Zinf) .^ 2.0); size=(500, 500), dpi=600, fill=(0, 0.2), lab="")
+xaxis!("Mean squared error", (0, 5))
+yaxis!("Density", (0, 3))
+savefig("figures/distance-configuration.png")
+
+sporder = sortperm(vec(sum(adjacency(C); dims=2)))
+
+ΔZ = Zeff .- Zinf
+
+heatmap(
+    ΔZ[sporder, sporder];
+    clim=(-3, 3),
+    c=:PuOr,
+    size=(500, 500),
+    dpi=600,
+    frame=:none,
+    aspectratio=1,
+)
+savefig("figures/heatmap-configuration.png")
+
