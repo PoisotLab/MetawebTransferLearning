@@ -1095,16 +1095,20 @@ savefig("figures/heatmap-configuration.png")
 
 
 
+# Step 6 - Inflating the predictions with the Newfoundland data
+
 ````julia
-#%% Dependencies
 using DelimitedFiles
 using DataFrames
 using CSV: CSV
 using GBIF
 using NCBITaxonomy: NCBITaxonomy
 using EcologicalNetworks
+````
 
-#%% Read the Strong & Leroux data
+...
+
+````julia
 sl_raw = readdlm("data/NLfoodweb.csv", ',')
 
 sl_sp = replace.(sl_raw[1, 2:end], "." => " ")
