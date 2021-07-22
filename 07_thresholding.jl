@@ -1,4 +1,4 @@
-# # Step 8 - finding the interaction cutoff for the final results1
+# # Step 8 - finding the interaction cutoff for the final results
 
 
 #%% Dependencies
