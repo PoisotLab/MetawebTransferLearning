@@ -1,11 +1,18 @@
 # Phylogenetic inference of ecological interactions through network embedding
 
-**Executive summary**: 
+## Executive summary
 
 1. network decomposition through a truncated-SVD capture the evolutionary signal of species interactions
 2. the decomposition into left/right subspaces is unique, represents latent traits for resp. outgoing and incoming edges, and can be used to predict interactions
 3. we can infer latent traits for unobserved species based on phylogenetic proximity with observed species
 4. we use this information to transfer information from the trophic interaction of European mammals to Canadian mammals for which we have no *a priori* data
+
+## About this README
+
+This README is generated using `Literate.jl` and contains *every line* or *every
+file* used to produce the entire results. This is, essentially, the director's
+commentary version of the analysis - there are discussions of the purpose, but
+also discussion of technical choices.
 
 
 # Step 1 - name matching
@@ -179,11 +186,9 @@ wrong.
 CSV.write(joinpath("artifacts", "names_metaweb_tree_gbif.csv"), gbif_cleanup)
 ````
 
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
 
 
+# Step 2 - tree cleaning
 
 ````julia
 using Phylo
@@ -191,15 +196,31 @@ using GBIF
 using CSV, DataFrames
 using ProgressMeter
 using Base.Threads
+````
 
+While we have made a number of matches in the previous step, we want to make
+sure that the tree names are *entirely* reconciled to the GBIF version of the
+European metaweb names.
+
+````julia
 tree = open(parsenexus, joinpath("data", "mammals.nex"))["*UNTITLED"]
 treenodes = [n.name for n in tree.nodes if !startswith(n.name, "Node ")]
+````
 
+We use the same basic approach as for the metaweb name matching, *i.e.* a
+collection of data frames meant to make the name cleaning thread-safe.
+
+````julia
 tree_cleanup_components = [
     DataFrame(; code=String[], gbifname=String[], gbifid=Int64[], equal=Bool[]) for
     i in 1:nthreads()
 ]
+````
 
+This code is, again, similar to the previous step - the only difference is
+that we need to get rid of the `_` that phylogeny files love so much.
+
+````julia
 p = Progress(length(treenodes))
 @threads for i in 1:length(treenodes)
     cname = replace(treenodes[i], '_' => ' ')
@@ -214,24 +235,45 @@ p = Progress(length(treenodes))
     end
     next!(p)
 end
+````
 
+As previously, we create a new artifact (note that it is not merged to the
+reconciled metaweb names - we are mostly accumulating keys for joins at this
+point).
+
+````julia
 tree_cleanup = vcat(tree_cleanup_components...)
 CSV.write(joinpath("artifacts", "upham_gbif_names.csv"), tree_cleanup)
 ````
 
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
 
 
+# Step 3 - IUCN cleanup
 
 ````julia
 using GBIF
 using CSV, DataFrames
 using ProgressMeter
 using Base.Threads
+````
 
+We downloaded a checklist of mammals reported to be in Canada from the IUCN
+database. Before deciding on this solution, we examined a few alternatives,
+notably the use of GBIF occurrences. GBIF occurrences had a few issues,
+including spurious records, museum specimens incorrectly tagged, captive
+exotic species being reported as occurrences, etc.
+
+````julia
 checklist = DataFrame(CSV.File(joinpath("data", "taxonomy.csv")))
+````
+
+## Taxonomy filtering
+
+The European metaweb is limited to "terrestrial" mammals. For this reason, we
+identified a number of taxonomic groups (mostly families) that are present in
+Canada but were excluded from the source dataset, and remove them.
+
+````julia
 valid_rows = map(
     fam ->
         !(
@@ -253,7 +295,14 @@ valid_rows = map(
     checklist.familyName,
 )
 checklist = checklist[findall(valid_rows), :]
+````
 
+## Extinct species removal
+
+Two species in the IUCN dataset are considered to be extinct, and we therefore
+remove them as well.
+
+````julia
 extinct_sp = map(
     sp ->
         !(
@@ -265,17 +314,28 @@ extinct_sp = map(
     checklist.scientificName,
 )
 checklist = checklist[findall(extinct_sp), :]
+````
 
+## Reconciliation on the GBIF names
+
+By this point, the approach should be familiar: we will create a thread-safe
+structure for the name cleaning, and use the GBIF API to find the correct
+matches.
+
+````julia
 checklist_cleanup_components = [
     DataFrame(; code=String[], gbifname=String[], gbifid=Int64[], equal=Bool[]) for
     i in 1:nthreads()
 ]
+````
 
-checklist_cleanup_components = [
-    DataFrame(; code=String[], gbifname=String[], gbifid=Int64[], equal=Bool[]) for
-    i in 1:nthreads()
-]
+Again, we get rid of `_` before doing the matching. This is actually *not*
+something we want built into the name cleaning function itself, because some
+taxa have underscores as valid identifiers. None of the taxa from this
+specific dataset do, but it is better to keep the low-level tools general, and
+make the specific changes in user-code.
 
+````julia
 p = Progress(length(checklist.scientificName))
 @threads for i in 1:length(checklist.scientificName)
     cname = replace(checklist.scientificName[i], '_' => ' ')
@@ -295,14 +355,14 @@ p = Progress(length(checklist.scientificName))
     end
     next!(p)
 end
+````
 
+We finally write the artifact:
+
+````julia
 checklist_cleanup = vcat(checklist_cleanup_components...)
 CSV.write(joinpath("artifacts", "iucn_gbif_names.csv"), checklist_cleanup)
 ````
-
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
 
 
 
@@ -375,10 +435,6 @@ open(joinpath("artifacts", "europeanmetaweb.csv"), "w") do euio
     end
 end
 ````
-
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
 
 
 
@@ -826,10 +882,6 @@ heatmap(
 savefig("figures/heatmap-configuration.png")
 ````
 
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-
 
 
 ````julia
@@ -885,10 +937,6 @@ for i in interactions(NL)
 end
 CSV.write("artifacts/newfoundland.csv", df)
 ````
-
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
 
 
 
@@ -993,10 +1041,6 @@ Save the corrected network
 ````julia
 CSV.write("artifacts/canadian_inflated.csv", inflated)
 ````
-
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
 
 
 
@@ -1118,8 +1162,4 @@ yaxis!("log(degree + 1)", (0, 5))
 
 savefig("figures/final-degree.png")
 ````
-
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
 

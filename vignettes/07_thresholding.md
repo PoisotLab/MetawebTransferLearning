@@ -117,7 +117,3 @@ yaxis!("log(degree + 1)", (0, 5))
 savefig("figures/final-degree.png")
 ````
 
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-

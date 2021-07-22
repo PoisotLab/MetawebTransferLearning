@@ -100,7 +100,3 @@ Save the corrected network
 CSV.write("artifacts/canadian_inflated.csv", inflated)
 ````
 
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-
