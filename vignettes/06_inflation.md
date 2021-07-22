@@ -1,3 +1,5 @@
+# Step 7 - inflating the predictions with the GLOBI data
+
 ````julia
 #%% Get the dependencies
 using HTTP

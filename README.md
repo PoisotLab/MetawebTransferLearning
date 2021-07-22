@@ -1095,7 +1095,7 @@ savefig("figures/heatmap-configuration.png")
 
 
 
-# Step 6 - Inflating the predictions with the Newfoundland data
+# Step 6 - inflating the predictions with the Newfoundland data
 
 ````julia
 using DelimitedFiles
@@ -1154,6 +1154,8 @@ CSV.write("artifacts/newfoundland.csv", df)
 ````
 
 
+
+# Step 7 - inflating the predictions with the GLOBI data
 
 ````julia
 #%% Get the dependencies
@@ -1258,6 +1260,8 @@ CSV.write("artifacts/canadian_inflated.csv", inflated)
 ````
 
 
+
+# Step 8 - finding the interaction cutoff for the final results1
 
 ````julia
 #%% Dependencies

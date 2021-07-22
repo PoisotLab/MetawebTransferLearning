@@ -1,4 +1,4 @@
-# # Step 6 - Inflating the predictions with the Newfoundland data
+# # Step 6 - inflating the predictions with the Newfoundland data
 
 using DelimitedFiles
 using DataFrames
