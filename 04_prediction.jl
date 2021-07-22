@@ -76,14 +76,20 @@ rnk = rank(adjacency(M))
 eig = svd(M).S[1:rnk]
 neig = eig ./ sum(eig)
 
-# The first piece of information is a screeplot of the eigenvalues:
+# The first piece of information is a screeplot of the eigenvalues. As a rule,
+# the document rendered from the literate files will not include the figures, as
+# we do not want to go into the analysis (there is, after all, a whole paper for
+# that).
 
 scatter(eig; lab="", dpi=600, size=(500, 500))
 xaxis!("Dimension", (1, 38))
 yaxis!("Eigenvalue", (0, 40))
 savefig("figures/screeplot.png")
 
-# Plot the variance explained
+# The second diagnosis plot is the proportion of variance explained. We added
+# lines marking the points that explain between 50% and 90% of the total
+# variance, every 10%.
+
 scatter(cumsum(neig); lab="", dpi=600, size=(500, 500))
 for ve in [0.5, 0.6, 0.7, 0.8, 0.9]
     i = findfirst(cumsum(neig) .> ve)
@@ -94,11 +100,34 @@ xaxis!("Dimension", (1, 38))
 yaxis!("Cumulative variance explained", (0, 1.0))
 savefig("figures/varexplained.png")
 
-# Partition the metaweb into two latent subspaces, using enough dimensions
-# to explain 60% of variance
+# At this point, we need to make an arbitrary call, which is to say to decide on
+# a proportion of variance explained. We decided on 60%, which means that the
+# first 12 ranks will be used.
+
+# ## Embedding the European metaweb
+
 L, R = rdpg(M, 12)
 
-# Get the correct threshold
+# The `L` and `R` variables are the left and right subspaces from the random dot
+# product graph (which in turn are the left and right subspace from the t-SVD
+# mutliplied by the square root of the diagonal matrix containing the
+# eigenvalues). Multiplying `L` and `R` (using a matrix multiplication!) will
+# give a rank-12 approximation of the European metaweb.
+
+# ## Thresholding the embedded network
+
+# The reconstucted network (`L*R`) will not have Boolean values. Essentially,
+# the multiplication will approximate something with values in ${0,1}$ by
+# something with values in ℝ, and so we need to find a cutoff to separate
+# interactions from non-interactions. This threshold is important because it
+# holds for any reconstruction made using these latent variables - that is to
+# say, when we infer the Canadian interactions using reconstrusted left and
+# right subspaces, we will apply the same threshold.
+
+# Our basic approach to threshdolding is to examine 500 cutoffs points, get the
+# confusion matrix, and retain as a threshold the value that maximizes
+# Informedness:
+
 A = adjacency(M)
 thresholds = LinRange(extrema(L * R)..., 500)
 tp = zeros(Float64, length(thresholds))
@@ -113,9 +142,16 @@ for (i, t) in enumerate(thresholds)
     fn[i] = sum((A) .& (.!(PN))) / sum(A)
 end
 
+# We can calculate Youden's J at every cutoff, and the threshold is going to be
+# the threshold associated to the maximum Y:
+
 Y = tp .+ tn .- 1
 maxY, posY = findmax(Y)
 threshold = thresholds[posY]
+
+# We can plot the optimal cutoff - this is not presented to the manuscript, but
+# useful in case you need to satisfy your curiosity. The best cutoff gives an
+# informedness essentially = 1, which is expected.
 
 plot(thresholds, Y; lw=0.0, fill=(0, 0.2), lab="", dpi=600, size=(500, 500))
 scatter!([threshold], [maxY]; lab="", c=:darkgrey, msw=0.0)
@@ -123,7 +159,10 @@ yaxis!("Youden's J", (0, 1))
 xaxis!("Cutoff", extrema(L * R))
 savefig("figures/optimalcutoff.png")
 
-# Plot the subspaces
+# ## Visual examination of the subspaces
+
+# The left and right subspaces *do* hold ecological information, and 
+
 plot(
     heatmap(L; c=:GnBu, frame=:none, cbar=false),
     heatmap(R'; c=:BuPu, frame=:none, cbar=false);
