@@ -80,11 +80,6 @@ has a `1` is added as an interaction to the network object:
 for row in mwlines[2:end]
     splitrow = replace.(split(row, ","), '"' => "")
     from = speciesdict[splitrow[1]]
-````
-
-Real name?
-
-````julia
     realname = namelist[isequal(from).(namelist.metaweb), :name]
     if length(realname) == 0
         continue

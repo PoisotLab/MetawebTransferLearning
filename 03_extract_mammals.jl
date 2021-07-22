@@ -65,7 +65,6 @@ mwhead = [speciesdict[sp] for sp in replace.(split(mwlines[1], ","), '"' => "")[
 for row in mwlines[2:end]
     splitrow = replace.(split(row, ","), '"' => "")
     from = speciesdict[splitrow[1]]
-    # Real name?
     realname = namelist[isequal(from).(namelist.metaweb), :name]
     if length(realname) == 0
         continue

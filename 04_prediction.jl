@@ -1,5 +1,10 @@
 # # Step 5 - the actual prediction
 
+# This is the largest step in the entire pipeline, but not necessarily a complex
+# one. In short, this will generate the entire paper, minus some of the data
+# inflation and post-processing steps. As such, there are a few dependencies in
+# play.
+
 using PhyloNetworks
 using ProgressMeter
 using LinearAlgebra
@@ -18,20 +23,33 @@ using StatsBase
 using StatsModels
 using Distributions
 
+# These lines are ensuring that the figures all look uniform, and we also set a
+# seed for reproducibility.
+
 theme(:mute)
 default(; frame=:box)
 Random.seed!(01189998819991197253)
 
-# Get ancillary functions
+# Some functions that are required for phylogenetic imputation are stored in
+# another file, and we will load them here to be done with that.
+
 include("lib/pwar.jl")
 
-# Read the tree
+# ## Reading the data pieces
+
+# Reading the tree is done with `PhyloNetworks` this time -- this is where we
+# will get the Brownian motion code from:
+
 tree_net = readTopology(joinpath("data", "mammals.newick"));
 
-# Read the names
+# We will grab back the corrected Europe/tree/GBIF names, as they will be used
+# quite a lot to match simulations to species names:
+
 namelist = DataFrame(CSV.File(joinpath("artifacts", "names_metaweb_tree_gbif.csv")))
 
-# Read the metaweb
+# Finally, we grab the European metaweb *not* from the original file, but from
+# our edgelist artifact.
+
 eurometa = readdlm(joinpath("artifacts", "europeanmetaweb.csv"), ',', String)
 mwspecies = unique(eurometa)
 M = UnipartiteNetwork(zeros(Bool, length(mwspecies), length(mwspecies)), mwspecies)
@@ -39,12 +57,27 @@ for i in 1:size(eurometa, 1)
     M[eurometa[i, :]...] = true
 end
 
-# Get the correct rank to cut the matrix at
-rnk = rank(Array(M.edges))
+# ## Finding the rank for truncation
+
+# The ideal way to find a cutoff for the rank at which the matrix should be cut
+# would involve the profile likelihood, or approximating the maximum curvature
+# point on the screeplot using the central difference approximation for the
+# second order partial derivative. Sadly all of these approaches will conclude
+# that only the first dimension is required (there is a biological reason for
+# this, to which we will return when we dig into the biological meaning of the
+# latent variables).
+
+# The only eigenvalues we care about at the ones that are up to the rank of the
+# adjacency matrix - we will extract them, and range them so that they sum to
+# unity. It makes no difference in the results, and allows to read the
+# proportion of variance explained directly.
+
+rnk = rank(adjacency(M))
 eig = svd(M).S[1:rnk]
 neig = eig ./ sum(eig)
 
-# Plot the eigenvalues
+# The first piece of information is a screeplot of the eigenvalues:
+
 scatter(eig; lab="", dpi=600, size=(500, 500))
 xaxis!("Dimension", (1, 38))
 yaxis!("Eigenvalue", (0, 40))
