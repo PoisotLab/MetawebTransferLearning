@@ -12,3 +12,14 @@ vignetteconfig = Dict(
 for corefile in corefiles
     Literate.markdown(corefile, "vignettes"; config=vignetteconfig)
 end
+
+README = readlines("_README.md")
+for f in readdir("vignettes/")
+    push!(README, "\n")
+    append!(README, readlines(joinpath("vignettes", f)))
+end
+open("README.md", "w") do readme
+    for line in README
+        println(readme, line)
+    end 
+end
