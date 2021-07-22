@@ -117,7 +117,7 @@ L, R = rdpg(M, 12)
 # ## Thresholding the embedded network
 
 # The reconstucted network (`L*R`) will not have Boolean values. Essentially,
-# the multiplication will approximate something with values in ${0,1}$ by
+# the multiplication will approximate something with values in {0,1} by
 # something with values in ℝ, and so we need to find a cutoff to separate
 # interactions from non-interactions. This threshold is important because it
 # holds for any reconstruction made using these latent variables - that is to
@@ -161,7 +161,11 @@ savefig("figures/optimalcutoff.png")
 
 # ## Visual examination of the subspaces
 
-# The left and right subspaces *do* hold ecological information, and 
+# The left and right subspaces *do* hold ecological information, and so it is a
+# good idea to check them out visually. One striking result is that species with
+# a value of 0 in the left subspace also have no preys: this is a strong clue
+# that the left subspace is associated to generality (in the sense of Schoener
+# 1989), a fact we will epxloit later on.
 
 plot(
     heatmap(L; c=:GnBu, frame=:none, cbar=false),
@@ -171,8 +175,15 @@ plot(
 )
 savefig("figures/subspaces.png")
 
-# Get the species names
+# ## Preparing the tree for inference
+
+# We are now ready to move on to the next step: infering the values of the left
+# and right subspaces for the species that are not in the European metaweb, but
+# are in the tree. To do so, we will need the tip names:
+
 treeleaves = tipLabels(tree_net)
+
+# We are now ready to match the tree to the Canadian species pool names:
 
 canada = DataFrame(CSV.File(joinpath("artifacts", "iucn_gbif_names.csv")))
 cancodes = replace.(unique(filter(!ismissing, canada.gbifname)), " " => "_")
@@ -181,24 +192,33 @@ tree_cleanup = DataFrame(CSV.File(joinpath("artifacts", "upham_gbif_names.csv"))
 csp = dropmissing!(DataFrame(; gbifname=canada.gbifname))
 csp = dropmissing(leftjoin(csp, tree_cleanup; on=:gbifname))
 
-canmammals = unique(csp.code)
+# We can store the cleaned Canadian species name into a data frame - this is
+# mandated by the `PhyloNetworks` interface:
 
-# We start getting a species pool to infer the traits
+canmammals = unique(csp.code)
 pool = DataFrame(; tipNames=canmammals)
 
-metaweb_can_names = replace.(M.S, " " => "_")
-metaweb_can_names ∩ canmammals
+# We finally convert the network names to their underscored versions:
 
-#### I am missing some species from the metaweb
+metaweb_can_names = replace.(M.S, " " => "_")
 filter((x) -> (x) ∉ (metaweb_can_names ∩ treeleaves), metaweb_can_names)
 
+# This prepare a data frame for the trait values:
+
 traitframe = DataFrame(; tipNames=treeleaves)
+
+# ## Infering the subspaces from the phylogeny
+
+# We will prepare the data frame required by `PhyloNetworks` to store the
+# reconstructed traits:
 
 matching_tree_reconstruction = DataFrame(;
     tipNames=treeleaves, nodeNumber=range(1, length(treeleaves); step=1)
 )
 
-# Automatically name the traits with L or R prefixes
+# To avoid writing long code, we prepare a series of columns with L and R as a
+# prefix, and the number (from 1 to 12) of the corresponding dimension as a
+# suffix:
 
 leftnames = "L" .* string.(1:size(L, 2))
 traits_L = DataFrame(L, Symbol.(leftnames))
@@ -208,16 +228,21 @@ rightnames = "R" .* string.(1:size(R, 1))
 traits_R = DataFrame(R', rightnames)
 traits_R[!, "tipNames"] = metaweb_can_names
 
-# Use a single dataframe for the traits
+# We can now merge these dataframes, and have something fully ready to be filled
+# by the phylogenetic simulation:
+
 traits = leftjoin(traitframe, traits_L; on=:tipNames)
 traits = leftjoin(traits, traits_R; on=:tipNames)
 
-# Imputed traits dataframe
 imputedtraits = DataFrame(;
     tipNames=[treeleaves; fill(missing, tree_net.numNodes - tree_net.numTaxa)]
 )
 
-# Imputation loop!
+# The last step is to reconstruct each trait (L1 to L12, R1 to R12) for the
+# entire tree. This is by far the longest part of the script, but it is not
+# terribly long. This could probably be made thread parallel fairly easily but,
+# this would also take more time to do than it takes to run.
+
 for coord in 1:size(L, 2)
     for prefix in ["L", "R"]
         @info "Reconstructing $(prefix)$(coord)"
@@ -230,10 +255,21 @@ for coord in 1:size(L, 2)
     end
 end
 
-# We save the reconstructed values
+# When the loop is done, we extract the values for the species in the Canadian
+# species pool:
+
 canadian_rec = innerjoin(dropmissing(imputedtraits), pool; on=:tipNames)
 
-# Get the left and right subspaces (and the lower and upper values)
+# ## Extracting the left and right subspaces from canada
+
+# This part of the script uses the same characters as the equations in the paper
+# - if you do not have a typeface with good unicode mathematical support
+# installed, you might not get the full effect.
+
+# Recall that a RDGP approximation is a matrix multiplication - we will
+# therefore get the reconstructed average values after the Brownian motion
+# model, and have a little look at them:
+
 𝓁 = Array(canadian_rec[!, leftnames .* "_mean"])
 𝓇 = transpose(Array(canadian_rec[!, rightnames .* "_mean"]))
 
@@ -245,11 +281,26 @@ plot(
 )
 savefig("figures/imputed-subspaces.png")
 
+# ## Generating a probabilistic network
+
+# Because the Brownian motion model gives us a lower and upper bound, we will
+# perform a series of random draws assuming that the values are uniformly
+# distributed between these values. This step of the workflow can be adapted
+# further. For example, one might want to account for the uncertainty in the
+# phylogeny itself, or fit the distribution returned at each node rather than
+# assuming a uniform distribution. We think that our approach introduces the
+# least amount of guesses; it is likely to be over-estimating the chances of
+# interactions a little, but this is the purpose of a metaweb: to give a list of
+# possible interactions, to be later pared down.
+
 𝓁ₗ = Array(canadian_rec[!, leftnames .* "_low"])
 𝓇ₗ = transpose(Array(canadian_rec[!, rightnames .* "_low"]))
 
 𝓁ᵤ = Array(canadian_rec[!, leftnames .* "_up"])
 𝓇ᵤ = transpose(Array(canadian_rec[!, rightnames .* "_up"]))
+
+# The distributions are expressed as actual Uniform distributions from the
+# `Distributions` package.
 
 ℒ = Matrix{Uniform}(undef, size(𝓁))
 for i in eachindex(ℒ)
@@ -261,23 +312,35 @@ for i in eachindex(ℛ)
     ℛ[i] = Uniform(𝓇ₗ[i], 𝓇ᵤ[i])
 end
 
+# We will do a large enough number of draws:
+
 draws = 20_000
 
 𝐋 = [rand.(ℒ) for i in 1:draws]
 𝐑 = [rand.(ℛ) for i in 1:draws]
 
-# We get the thresholded networks here
+# There are two pieces of information to keep in mind here. The first is that a
+# RDPG is a matrix multiplication, so we simply need to multiply the 20000
+# random subspaces, to get 20000 random matrices. The second is that these
+# matrices give results not in {0,1} but in ℝ, but we have estimated an optimal
+# threshold for this projection. Doing all this is a one-liner:
+
 Ns = [(𝐋[i] * 𝐑[i]) .> threshold for i in 1:length(𝐋)]
+
+# We can finally generate a probabilistic metaweb, in which the probability is
+# defined as the proprtion of samples in which the interaction was infered:
+
 P = UnipartiteProbabilisticNetwork(
     reduce(.+, Ns) ./ draws, replace.(canadian_rec.tipNames, "_" => " ")
 )
 
-# Deterministic version
-N = UnipartiteNetwork(𝓁 * 𝓇 .>= threshold, replace.(canadian_rec.tipNames, "_" => " "))
+# We can have a little look at the interactions sorted by probabilities:
 
 sort(interactions(P); by=(x) -> x.probability, rev=true)
 
-histogram([x.probability for x in interactions(P)])
+# ## Visualising the results
+
+# The next figures are very simple plots of the adjacency matrices:
 
 sporder = sortperm(vec(sum(adjacency(P); dims=2)))
 h1 = heatmap(
@@ -304,6 +367,12 @@ h2 = heatmap(
 plot(h2, h1; size=(1000, 500))
 savefig("figures/adjacencymatrices.png")
 
+# ## Writing output files for the raw predictions
+
+# We will store the results in a data frame - the information we care about is
+# the probability for the species pair, and whether the pair was also found in
+# Europe, and if so, whether it interacted:
+
 output = DataFrame(; from=String[], to=String[], score=Float64[], pair=Bool[], int=Bool[])
 for int in interactions(P)
     pair = (int.from in species(M)) & (int.to in species(M))
@@ -313,9 +382,11 @@ end
 sort!(output, [:score, :from, :to]; rev=[true, false, false])
 
 # Save the basic network (no corrections)
+
 CSV.write("artifacts/canadian_uncorrected.csv", output)
 
-# Exploration of the relationship between subspaces and network properties
+# ## Exploration of the relationship between subspaces and network properties
+
 kout = degree(P; dims=1)
 kin = degree(P; dims=2)
 ordered_sp = replace.(canadian_rec.tipNames, "_" => " ")
@@ -339,9 +410,16 @@ xaxis!("Position in the right subspace", extrema(vcat(𝓇', 𝓁)))
 yaxis!("Probabilistic vulnerability")
 savefig("figures/right-vuln.png")
 
-# Corrections assuming
-# - if species don't interact in Europe, no interaction in Canada
-# - if species interact in Europe, interaction in Canada
+# ## Basic corrections
+
+# We will directly bring knowledge from the European metaweb, meaning that if
+# two species interact in Europe, we assume they also do in Canada (remember,
+# these are metawebs, we only care about the biological feasibility of the
+# interaction); if two species do not interact in Europe, we prevent them from
+# interacting in Canada - this later point could be reversed, by inflating the
+# European metaweb using the simulation results, and whether to apply this step
+# at all can be considered on a case by case basis.
+
 N = copy(P)
 shared_species = filter(s -> s in species(M), species(P))
 for s1 in shared_species
@@ -349,10 +427,15 @@ for s1 in shared_species
         N[s1, s2] = M[s1, s2] ? 1.0 : 0.0
     end
 end
+
+# We may have introduced a number of 0s in the sparse matrix, and it is good
+# hygiene to remove them.
+
 SparseArrays.dropzeros!(N.edges)
 simplify!(N)
 
-# Final metaweb
+# ## Writing the final metaweb
+
 final = DataFrame(; from=String[], to=String[], score=Float64[])
 for int in interactions(N)
     push!(final, (int.from, int.to, int.probability))
@@ -362,7 +445,8 @@ sort!(final, [:score, :from, :to]; rev=[true, false, false])
 # Save the corrected network
 CSV.write("artifacts/canadian_corrected.csv", final)
 
-#%% Plot
+# ## Plots for the core results
+
 l = @layout [
     a{0.3w} b
     c{0.7h} d
