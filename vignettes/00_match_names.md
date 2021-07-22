@@ -1,8 +1,9 @@
-# # Step 1 - name matching
-#
-# The names in the parts of the datasets are using different versions of the
-# taxonomy, and so we will reconcile everything using GBIF.
+# Step 1 - name matching
 
+The names in the parts of the datasets are using different versions of the
+taxonomy, and so we will reconcile everything using GBIF.
+
+````julia
 using Phylo
 using GBIF
 using DataFrames
@@ -60,3 +61,9 @@ end
 
 gbif_cleanup.upham = n
 CSV.write(joinpath("artifacts", "names_metaweb_tree_gbif.csv"), gbif_cleanup)
+````
+
+---
+
+*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
+
