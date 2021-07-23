@@ -5,6 +5,21 @@
 # entirely automated, and required no human decision. We rely on a mix of strict
 # matching, and then search through synonyms.
 
+# The scripts are going to require a number of folders, so we will create them
+# here. Note that it is assume you will download the `data/` folder, and the
+# `Project.toml`. More details on Julia package management can be found on the
+# `Pkg.jl` website, [https://pkgdocs.julialang.org/v1/].
+
+if !isdir("data")
+    error("You need to download the data folder from https://github.com/PoisotLab/MetawebTransferLearning/tree/main/data")
+end
+
+if !isfile("Project.toml")
+    error("You need to download the project file from https://github.com/PoisotLab/MetawebTransferLearning/blob/main/Project.toml")
+end
+
+isdir("artifacts") || mkdir("artifacts")
+isdir("figures") || mkdir("figures")
 
 # ## Dependencies
 #
