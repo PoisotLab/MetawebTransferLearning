@@ -16,16 +16,16 @@ also discussion of technical choices.
 
 ## Reproducing the code
 
-| Step                           |             Script              |                    Vignette                     |                              Notebook                              |
-| ------------------------------ | :-----------------------------: | :---------------------------------------------: | :----------------------------------------------------------------: |
-| Match names                    | [:computer:](00_match_names.jl) | [:page_facing_up:](vignettes/00_match_names.md) | [:notebook_with_decorative_cover:](vignettes/00_match_names.ipynb) |
-| Cleanup phylogeny              | [:computer:](01_clean_tree.jl)  | [:page_facing_up:](vignettes/01_clean_tree.md)  | [:notebook_with_decorative_cover:](vignettes/01_clean_tree.ipynb)  |
-| Cleanup IUCN                   | [:computer:](02_clean_iucn.jl)  | [:page_facing_up:](vignettes/02_clean_iucn.md)  | [:notebook_with_decorative_cover:](vignettes/02_clean_iucn.ipynb)  |
-| Reconcile mammal names         | [:computer:](00_match_names.jl) | [:page_facing_up:](vignettes/00_match_names.md) | [:notebook_with_decorative_cover:](vignettes/00_match_names.ipynb) |
-| Make the predictions           | [:computer:](00_match_names.jl) | [:page_facing_up:](vignettes/00_match_names.md) | [:notebook_with_decorative_cover:](vignettes/00_match_names.ipynb) |
-| Compare with Newfoundland data | [:computer:](00_match_names.jl) | [:page_facing_up:](vignettes/00_match_names.md) | [:notebook_with_decorative_cover:](vignettes/00_match_names.ipynb) |
-| Compare with GLOBI data        | [:computer:](00_match_names.jl) | [:page_facing_up:](vignettes/00_match_names.md) | [:notebook_with_decorative_cover:](vignettes/00_match_names.ipynb) |
-| Produce the Canadian metaweb   | [:computer:](00_match_names.jl) | [:page_facing_up:](vignettes/00_match_names.md) | [:notebook_with_decorative_cover:](vignettes/00_match_names.ipynb) |
+| Step                                       |               Script                |                      Vignette                       |                                Notebook                                |
+| ------------------------------------------ | :---------------------------------: | :-------------------------------------------------: | :--------------------------------------------------------------------: |
+| Correct names from the European metaweb    |   [:computer:](00_match_names.jl)   |   [:page_facing_up:](vignettes/00_match_names.md)   |   [:notebook_with_decorative_cover:](vignettes/00_match_names.ipynb)   |
+| Correct names from the reference phylogeny |   [:computer:](01_clean_tree.jl)    |   [:page_facing_up:](vignettes/01_clean_tree.md)    |   [:notebook_with_decorative_cover:](vignettes/01_clean_tree.ipynb)    |
+| Harmonize IUCN names                       |   [:computer:](02_clean_iucn.jl)    |   [:page_facing_up:](vignettes/02_clean_iucn.md)    |   [:notebook_with_decorative_cover:](vignettes/02_clean_iucn.ipynb)    |
+| Reconcile all mammal names                 | [:computer:](03_extract_mammals.jl) | [:page_facing_up:](vignettes/03_extract_mammals.md) | [:notebook_with_decorative_cover:](vignettes/03_extract_mammals.ipynb) |
+| Make the predictions                       |   [:computer:](04_prediction.jl)    |   [:page_facing_up:](vignettes/04_prediction.md)    |   [:notebook_with_decorative_cover:](vignettes/04_prediction.ipynb)    |
+| Compare with Newfoundland data             |  [:computer:](05_StrongLeroux.jl)   |  [:page_facing_up:](vignettes/05_StrongLeroux.md)   |  [:notebook_with_decorative_cover:](vignettes/05_StrongLeroux.ipynb)   |
+| Compare with GLOBI data                    |    [:computer:](06_inflation.jl)    |    [:page_facing_up:](vignettes/06_inflation.md)    |    [:notebook_with_decorative_cover:](vignettes/06_inflation.ipynb)    |
+| Produce the Canadian metaweb               |  [:computer:](07_thresholding.jl)   |  [:page_facing_up:](vignettes/07_thresholding.md)   |  [:notebook_with_decorative_cover:](vignettes/07_thresholding.ipynb)   |
 
 
 # Step 1 - name matching
