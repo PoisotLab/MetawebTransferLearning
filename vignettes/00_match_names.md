@@ -33,7 +33,7 @@ metaweb_names = String.(readdlm(joinpath("data", "Spp_Id.txt")))
 mammal_positions = findall(startswith("M"), metaweb_names[:, 1])
 ````
 
-This line specifically is going to create the list of mammal names are
+This line specifically is going to create the list of mammal names that are
 recorded in the European metaweb. As such, this is the first one we will
 clean.
 
@@ -44,7 +44,7 @@ mammal_names = metaweb_names[mammal_positions, 2]
 To ensure that we can join dataframes together, we will create a data frame
 with the species code, the name and ID of the matched species in the GBIF
 backbone, and finally, a flag to check that the two names are equal. This flag
-is useful for manual inspection; most often, names are unequal because te
+is useful for manual inspection; most often, names are unequal because the
 European metaweb uses deprecated taxonomic names.
 
 Note that we are actually creating *one* dataframe per thread. This avoids

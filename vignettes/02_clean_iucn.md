@@ -47,10 +47,10 @@ valid_rows = map(
 checklist = checklist[findall(valid_rows), :]
 ````
 
-## Extinct species removal
+## Species-specific removal
 
-Two species in the IUCN dataset are considered to be extinct, and we therefore
-remove them as well.
+*Neovison macrodon* (considered to be extinct) and *Enhydra lutris* (considered
+a marine mammal) are removed as well.
 
 ````julia
 extinct_sp = map(
