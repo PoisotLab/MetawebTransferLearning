@@ -16,9 +16,9 @@ also discussion of technical choices.
 
 ## Reproducing the code
 
-| Step                           | Script                | Annotated MD | Notebook |
-| ------------------------------ | --------------------- | ------------ | -------- |
-| Match names                    | [💻](00_match_names.jl) |              |          |
+| Step                           |             Script              |                    Vignette                     |                              Notebook                              |
+| ------------------------------ | :-----------------------------: | :---------------------------------------------: | :----------------------------------------------------------------: |
+| Match names                    | [:computer:](00_match_names.jl) | [:page_facing_up:](vignettes/00_match_names.md) | [:notebook_with_decorative_cover:](vignettes/00_match_names.ipynb) |
 | Cleanup phylogeny              |
 | Cleanup IUCN                   |
 | Reconcile mammal names         |
