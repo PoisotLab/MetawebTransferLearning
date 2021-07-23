@@ -18,7 +18,7 @@ also discussion of technical choices.
 
 | Step                           | Script                | Annotated MD | Notebook |
 | ------------------------------ | --------------------- | ------------ | -------- |
-| Match names                    | `[00_match_names.jl]` |              |          |
+| Match names                    | [💻](00_match_names.jl) |              |          |
 | Cleanup phylogeny              |
 | Cleanup IUCN                   |
 | Reconcile mammal names         |
