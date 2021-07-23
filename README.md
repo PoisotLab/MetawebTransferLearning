@@ -19,13 +19,13 @@ also discussion of technical choices.
 | Step                           |             Script              |                    Vignette                     |                              Notebook                              |
 | ------------------------------ | :-----------------------------: | :---------------------------------------------: | :----------------------------------------------------------------: |
 | Match names                    | [:computer:](00_match_names.jl) | [:page_facing_up:](vignettes/00_match_names.md) | [:notebook_with_decorative_cover:](vignettes/00_match_names.ipynb) |
-| Cleanup phylogeny              |
-| Cleanup IUCN                   |
-| Reconcile mammal names         |
-| Make the predictions           |
-| Compare with Newfoundland data |
-| Compare with GLOBI data        |
-| Produce the Canadian metaweb   |
+| Cleanup phylogeny              | [:computer:](01_clean_tree.jl)  | [:page_facing_up:](vignettes/01_clean_tree.md)  | [:notebook_with_decorative_cover:](vignettes/01_clean_tree.ipynb)  |
+| Cleanup IUCN                   | [:computer:](02_clean_iucn.jl)  | [:page_facing_up:](vignettes/02_clean_iucn.md)  | [:notebook_with_decorative_cover:](vignettes/02_clean_iucn.ipynb)  |
+| Reconcile mammal names         | [:computer:](00_match_names.jl) | [:page_facing_up:](vignettes/00_match_names.md) | [:notebook_with_decorative_cover:](vignettes/00_match_names.ipynb) |
+| Make the predictions           | [:computer:](00_match_names.jl) | [:page_facing_up:](vignettes/00_match_names.md) | [:notebook_with_decorative_cover:](vignettes/00_match_names.ipynb) |
+| Compare with Newfoundland data | [:computer:](00_match_names.jl) | [:page_facing_up:](vignettes/00_match_names.md) | [:notebook_with_decorative_cover:](vignettes/00_match_names.ipynb) |
+| Compare with GLOBI data        | [:computer:](00_match_names.jl) | [:page_facing_up:](vignettes/00_match_names.md) | [:notebook_with_decorative_cover:](vignettes/00_match_names.ipynb) |
+| Produce the Canadian metaweb   | [:computer:](00_match_names.jl) | [:page_facing_up:](vignettes/00_match_names.md) | [:notebook_with_decorative_cover:](vignettes/00_match_names.ipynb) |
 
 
 # Step 1 - name matching
