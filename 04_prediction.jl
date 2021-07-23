@@ -67,9 +67,9 @@ end
 # this, to which we will return when we dig into the biological meaning of the
 # latent variables).
 
-# The only eigenvalues we care about at the ones that are up to the rank of the
+# The only eigenvalues we care about are the ones that are up to the rank of the
 # adjacency matrix - we will extract them, and range them so that they sum to
-# unity. It makes no difference in the results, and allows to read the
+# unity. It makes no difference in the results, and allows us to read the
 # proportion of variance explained directly.
 
 rnk = rank(adjacency(M))
@@ -110,7 +110,7 @@ L, R = rdpg(M, 12)
 
 # The `L` and `R` variables are the left and right subspaces from the random dot
 # product graph (which in turn are the left and right subspace from the t-SVD
-# mutliplied by the square root of the diagonal matrix containing the
+# multiplied by the square root of the diagonal matrix containing the
 # eigenvalues). Multiplying `L` and `R` (using a matrix multiplication!) will
 # give a rank-12 approximation of the European metaweb.
 
@@ -149,7 +149,7 @@ Y = tp .+ tn .- 1
 maxY, posY = findmax(Y)
 threshold = thresholds[posY]
 
-# We can plot the optimal cutoff - this is not presented to the manuscript, but
+# We can plot the optimal cutoff - this is not presented in the manuscript, but
 # useful in case you need to satisfy your curiosity. The best cutoff gives an
 # informedness essentially = 1, which is expected.
 
@@ -328,7 +328,7 @@ draws = 20_000
 Ns = [(𝐋[i] * 𝐑[i]) .> threshold for i in 1:length(𝐋)]
 
 # We can finally generate a probabilistic metaweb, in which the probability is
-# defined as the proprtion of samples in which the interaction was infered:
+# defined as the proprtion of samples in which the interaction was inferred:
 
 P = UnipartiteProbabilisticNetwork(
     reduce(.+, Ns) ./ draws, replace.(canadian_rec.tipNames, "_" => " ")
