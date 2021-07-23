@@ -9,8 +9,13 @@ vignetteconfig = Dict(
     "credit" => false
 )
 
+nbconfig = Dict(
+    "execute" => false
+)
+
 for corefile in corefiles
     Literate.markdown(corefile, "vignettes"; config=vignetteconfig)
+    Literate.notebook(corefile, "vignettes"; config=nbconfig)
 end
 
 README = readlines("_README.md")

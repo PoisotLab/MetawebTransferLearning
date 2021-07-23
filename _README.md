@@ -13,3 +13,16 @@ This README is generated using `Literate.jl` and contains *every line* or *every
 file* used to produce the entire results. This is, essentially, the director's
 commentary version of the analysis - there are discussions of the purpose, but
 also discussion of technical choices.
+
+## Reproducing the code
+
+| Step                           | Script | Annotated MD | Notebook |
+| ------------------------------ | ------ | ------------ | -------- |
+| Match names                    |        |              |          |
+| Cleanup phylogeny              |
+| Cleanup IUCN                   |
+| Reconcile mammal names         |
+| Make the predictions           |
+| Compare with Newfoundland data |
+| Compare with GLOBI data        |
+| Produce the Canadian metaweb   |
