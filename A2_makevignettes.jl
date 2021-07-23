@@ -19,7 +19,7 @@ for corefile in corefiles
 end
 
 README = readlines("_README.md")
-for f in readdir("vignettes/")
+for f in filter(endswith(".md"), readdir("vignettes/"))
     push!(README, "\n")
     append!(README, readlines(joinpath("vignettes", f)))
 end
