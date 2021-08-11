@@ -83,7 +83,7 @@ neig = eig ./ sum(eig)
 
 scatter(eig; lab="", dpi=600, size=(500, 500))
 xaxis!("Dimension", (1, 38))
-yaxis!("Eigenvalue", (0, 40))
+yaxis!("Singular value", (0, 40))
 savefig("figures/screeplot.png")
 
 # The second diagnosis plot is the proportion of variance explained. We added
