@@ -30,10 +30,16 @@ theme(:mute)
 default(; frame=:box)
 Random.seed!(01189998819991197253)
 
-# Some functions that are required for phylogenetic imputation are stored in
-# another file, and we will load them here to be done with that.
+# This function will be used for leaf trait reconstruction:
 
-include("lib/pwar.jl")
+function leaf_traits_reconstruction(traits,tree)
+    ancestral_rec = ancestralStateReconstruction(traits, tree);
+    predint_rec = predint(ancestral_rec, level = 0.3)
+    lower = predint_rec[:,1]
+    upper = predint_rec[:,2]
+    mean_trait = mean(predint_rec,dims = 2)[:,1]
+    return [lower,upper,mean_trait]
+end
 
 # ## Reading the data pieces
 
