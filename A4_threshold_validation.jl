@@ -22,8 +22,9 @@ for i in 1:size(eurometa, 1)
     M[eurometa[i, :]...] = true
 end
 
-drop_at = 10:100:(links(M)-1)
+drop_at = 10:20:(links(M)-1)
 drop_auc = zeros(Float64, length(drop_at))
+drop_acc = zeros(Float64, length(drop_at))
 drop_J = zeros(Float64, length(drop_at))
 drop_thr = zeros(Float64, length(drop_at))
 drop_kappa = zeros(Float64, length(drop_at))
@@ -62,6 +63,7 @@ drop_kappa = zeros(Float64, length(drop_at))
     drop_J[dridx] = first(findmax(J))
     drop_kappa[dridx] = first(findmax(κ))
     drop_thr[dridx] = thresholds[last(findmax(J))]
+    drop_acc[dridx] = acc[last(findmax(J))]
 end
 
 plot([0, 1, 1, 0], [0, 0, 0.5, 0.5], st=:shape, c=:grey, alpha=0.2, lw=0.0, aspectratio=1)
@@ -72,6 +74,12 @@ xaxis!("Interactions withheld", (0, 1))
 yaxis!("ROC-AUC", (0,1))
 savefig("figures/sensibility_rocauc.png")
 
+plot([0, 1, 1, 0], [0, 0, 0.5, 0.5], st=:shape, c=:grey, alpha=0.2, lw=0.0, aspectratio=1)
+scatter!(drop_at./links(M), drop_acc, lab="", leg=false, c=:black)
+xaxis!("Interactions withheld", (0, 1))
+yaxis!("Accuracy", (0,1))
+savefig("figures/sensibility_accuracy.png")
+
 plot([0, 1, 1, 0], [0, 0, 0.2, 0.2], st=:shape, c=:grey, alpha=0.8, lw=0.0, aspectratio=1)
 plot!([0, 1, 1, 0], [0.2, 0.2, 0.4, 0.4], st=:shape, c=:grey, alpha=0.6, lw=0.0)
 plot!([0, 1, 1, 0], [0.4, 0.4, 0.6, 0.6], st=:shape, c=:grey, alpha=0.4, lw=0.0)
@@ -81,33 +89,8 @@ xaxis!("Interactions withheld", (0, 1))
 yaxis!("Cohen's κ", (0,1))
 savefig("figures/sensibility_kappa.png")
 
-dist_thr = zeros(Float64, 200)
-
-@showprogress for i in 1:length(dist_thr)
-    m = copy(M)
-    for i in sample(interactions(M), floor(Int, 0.25*links(M)); replace=false)
-        m[i.from, i.to] = false
-    end
-    L, R = rdpg(m, 12)
-    A = adjacency(M)
-    thresholds = LinRange(extrema(L * R)..., 500)
-    tp = zeros(Float64, length(thresholds))
-    tn = similar(tp)
-    fp = similar(tp)
-    fn = similar(tp)
-    for (i, t) in enumerate(thresholds)
-        PN = (L * R) .>= t
-        tp[i] = sum((A) .& (PN)) / sum(A)
-        tn[i] = sum((.!(A)) .& (.!(PN))) / sum(.!(A))
-        fp[i] = sum((.!(A)) .& (PN)) / sum(.!(A))
-        fn[i] = sum((A) .& (.!(PN))) / sum(A)
-    end
-    n = tp .+ fp .+ tn .+ fn;
-    J = (tp ./ (tp .+ fn)) + (tn ./ (tn .+ fp)) .- 1.0;
-    dist_thr[i] = thresholds[last(findmax(J))]
-end
-
-histogram(dist_thr)
-xaxis!("Threshold", (0, 1))
-yaxis!("Density", (0,1))
+scatter(drop_at./links(M), drop_thr, c=:black, leg=false)
+hline!([0.206], ls=:dash, c=:grey)
+xaxis!("Interactions withheld", (0, 1))
+yaxis!("Best threshold", (0,1))
 savefig("figures/sensibility_threshold.png")
