@@ -30,15 +30,19 @@ theme(:mute)
 default(; frame=:box)
 Random.seed!(01189998819991197253)
 
-# This function will be used for leaf trait reconstruction:
+# This function will be used for leaf trait reconstruction. One is uniform
+# assuming a 30% confidence internal, one is normal assuming a 95% confidence
+# interval.
 
-function leaf_traits_reconstruction(traits,tree)
-    ancestral_rec = ancestralStateReconstruction(traits, tree);
-    predint_rec = predint(ancestral_rec, level = 0.3)
-    lower = predint_rec[:,1]
-    upper = predint_rec[:,2]
-    mean_trait = mean(predint_rec,dims = 2)[:,1]
-    return [lower,upper,mean_trait]
+function ace_distribution(τ, ϕ)
+    astate = ancestralStateReconstruction(τ, ϕ)
+    ustate = predint(astate, level=0.3)
+    pstate = predint(astate, level=0.95)
+    Du = Uniform.(ustate[:,1].-10eps(), ustate[:,2].+10eps())
+    σ = (pstate[:,2] .- pstate[:,1])./3.92
+    μ = mean(pstate,dims = 2)[:,1]
+    Dn = Normal.(μ, σ)
+    return (Du, Dn)
 end
 
 # ## Reading the data pieces
@@ -246,18 +250,19 @@ imputedtraits = DataFrame(;
 
 # The last step is to reconstruct each trait (L1 to L12, R1 to R12) for the
 # entire tree. This is by far the longest part of the script, but it is not
-# terribly long. This could probably be made thread parallel fairly easily but,
-# this would also take more time to do than it takes to run.
+# terribly long. It returns two distributions for each node: a uniform
+# distribution under a "strict" view of the parameters (30% CI), and a regular
+# normal distribution whose parameters are estimated under the values of the 95%
+# CI.
 
 for coord in 1:size(L, 2)
     for prefix in ["L", "R"]
         @info "Reconstructing $(prefix)$(coord)"
-        lower, upper, mean_trait = leaf_traits_reconstruction(
+        Du, Dn = ace_distribution(
             traits[!, ["$(prefix)$(coord)", "tipNames"]], tree_net
         )
-        imputedtraits[!, "$(prefix)$(coord)_low"] = lower
-        imputedtraits[!, "$(prefix)$(coord)_up"] = upper
-        imputedtraits[!, "$(prefix)$(coord)_mean"] = mean_trait
+        imputedtraits[!, "$(prefix)$(coord)_Normal"] = Dn
+        imputedtraits[!, "$(prefix)$(coord)_Uniform"] = Du
     end
 end
 
@@ -266,7 +271,7 @@ end
 
 canadian_rec = innerjoin(dropmissing(imputedtraits), pool; on=:tipNames)
 
-# ## Extracting the left and right subspaces from canada
+# ## Extracting the left and right subspaces for Canada
 
 # This part of the script uses the same characters as the equations in the paper
 # - if you do not have a typeface with good unicode mathematical support
@@ -274,10 +279,18 @@ canadian_rec = innerjoin(dropmissing(imputedtraits), pool; on=:tipNames)
 
 # Recall that a RDGP approximation is a matrix multiplication - we will
 # therefore get the reconstructed average values after the Brownian motion
-# model, and have a little look at them:
+# model, and have a little look at them. Recall that there are *two* candidate
+# trait distributions: uniform and normal.
 
-𝓁 = Array(canadian_rec[!, leftnames .* "_mean"])
-𝓇 = transpose(Array(canadian_rec[!, rightnames .* "_mean"]))
+ℒn = Array(canadian_rec[!, leftnames .* "_Normal"])
+ℛn = Array(canadian_rec[!, rightnames .* "_Normal"])
+
+ℒu = Array(canadian_rec[!, leftnames .* "_Uniform"])
+ℛu = Array(canadian_rec[!, rightnames .* "_Uniform"])
+
+
+𝓁 = mean.(ℒn)
+𝓇 = mean.(ℛn)'
 
 plot(
     heatmap(𝓁; c=:GnBu, frame=:none, cbar=false),
@@ -289,41 +302,26 @@ savefig("figures/imputed-subspaces.png")
 
 # ## Generating a probabilistic network
 
-# Because the Brownian motion model gives us a lower and upper bound, we will
-# perform a series of random draws assuming that the values are uniformly
-# distributed between these values. This step of the workflow can be adapted
-# further. For example, one might want to account for the uncertainty in the
-# phylogeny itself, or fit the distribution returned at each node rather than
-# assuming a uniform distribution. We think that our approach introduces the
-# least amount of guesses; it is likely to be over-estimating the chances of
-# interactions a little, but this is the purpose of a metaweb: to give a list of
-# possible interactions, to be later pared down.
-
-𝓁ₗ = Array(canadian_rec[!, leftnames .* "_low"])
-𝓇ₗ = transpose(Array(canadian_rec[!, rightnames .* "_low"]))
-
-𝓁ᵤ = Array(canadian_rec[!, leftnames .* "_up"])
-𝓇ᵤ = transpose(Array(canadian_rec[!, rightnames .* "_up"]))
-
-# The distributions are expressed as actual Uniform distributions from the
-# `Distributions` package.
-
-ℒ = Matrix{Uniform}(undef, size(𝓁))
-for i in eachindex(ℒ)
-    ℒ[i] = Uniform(𝓁ₗ[i], 𝓁ᵤ[i])
-end
-
-ℛ = Matrix{Uniform}(undef, size(𝓇))
-for i in eachindex(ℛ)
-    ℛ[i] = Uniform(𝓇ₗ[i], 𝓇ᵤ[i])
-end
+# Because the character estimation step returns a probability for each
+# node/latent variable, we can perform a series of random draws under the
+# assumed distribution. We think that the approach relying on a narrow
+# confidence internal introduces the least amount of guesses; it is likely to be
+# over-estimating the chances of interactions a little, but this is the purpose
+# of a metaweb: to give a list of possible interactions, to be later pared down.
 
 # We will do a large enough number of draws:
 
 draws = 20_000
 
-𝐋 = [rand.(ℒ) for i in 1:draws]
-𝐑 = [rand.(ℛ) for i in 1:draws]
+# First for the normal model
+
+𝐋n = [rand.(ℒn) for i in 1:draws]
+𝐑n = [rand.(ℛn) for i in 1:draws]
+
+# Second for the uniform model
+
+𝐋u = [rand.(ℒu) for i in 1:draws]
+𝐑u = [rand.(ℛu) for i in 1:draws]
 
 # There are two pieces of information to keep in mind here. The first is that a
 # RDPG is a matrix multiplication, so we simply need to multiply the 20000
@@ -331,46 +329,80 @@ draws = 20_000
 # matrices give results not in {0,1} but in ℝ, but we have estimated an optimal
 # threshold for this projection. Doing all this is a one-liner:
 
-Ns = [(𝐋[i] * 𝐑[i]) .> threshold for i in 1:length(𝐋)]
+Nsn = [(𝐋n[i] * 𝐑n[i]') .> threshold for i in 1:length(𝐋n)]
+Nsu = [(𝐋u[i] * 𝐑u[i]') .> threshold for i in 1:length(𝐋u)]
 
 # We can finally generate a probabilistic metaweb, in which the probability is
 # defined as the proprtion of samples in which the interaction was inferred:
 
-P = UnipartiteProbabilisticNetwork(
-    reduce(.+, Ns) ./ draws, replace.(canadian_rec.tipNames, "_" => " ")
+Pn = UnipartiteProbabilisticNetwork(
+    reduce(.+, Nsn) ./ draws, replace.(canadian_rec.tipNames, "_" => " ")
+)
+
+#-
+
+Pu = UnipartiteProbabilisticNetwork(
+    reduce(.+, Nsu) ./ draws, replace.(canadian_rec.tipNames, "_" => " ")
 )
 
 # We can have a little look at the interactions sorted by probabilities:
 
-sort(interactions(P); by=(x) -> x.probability, rev=true)
+sort(interactions(Pn); by=(x) -> x.probability, rev=true)
+
+#-
+
+sort(interactions(Pu); by=(x) -> x.probability, rev=true)
 
 # ## Visualising the results
 
 # The next figures are very simple plots of the adjacency matrices:
 
-sporder = sortperm(vec(sum(adjacency(P); dims=2)))
+sporder = sortperm(vec(sum(adjacency(Pn); dims=2)))
 h1 = heatmap(
-    adjacency(P)[sporder, sporder];
+    adjacency(Pn)[sporder, sporder];
     c=:Greys,
-    frame=:none,
+    frame=:box,
     cbar=false,
+    ticks=false,
     dpi=600,
     size=(500, 500),
     aspectratio=1,
+    xlim=(1, richness(Pn)),
+    ylim=(1, richness(Pn)),
+    title="Canadian metawen (Normal)"
+)
+
+sporder = sortperm(vec(sum(adjacency(Pu); dims=2)))
+h2 = heatmap(
+    adjacency(Pu)[sporder, sporder];
+    c=:Greys,
+    frame=:box,
+    cbar=false,
+    ticks=false,
+    dpi=600,
+    size=(500, 500),
+    aspectratio=1,
+    xlim=(1, richness(Pu)),
+    ylim=(1, richness(Pu)),
+    title="Canadian metaweb (Uniform)"
 )
 
 sporder = sortperm(vec(sum(adjacency(M); dims=2)))
-h2 = heatmap(
+h3 = heatmap(
     adjacency(M)[sporder, sporder];
     c=:Greys,
-    frame=:none,
+    frame=:box,
     cbar=false,
+    ticks=false,
     dpi=600,
     size=(500, 500),
     aspectratio=1,
+    xlim=(1, richness(M)),
+    ylim=(1, richness(M)),
+    title="European metaweb"
 )
 
-plot(h2, h1; size=(1000, 500))
+plot(h3, h1, h2; size=(1500, 500), layout=(1,3))
 savefig("figures/adjacencymatrices.png")
 
 # ## Writing output files for the raw predictions
@@ -379,26 +411,39 @@ savefig("figures/adjacencymatrices.png")
 # the probability for the species pair, and whether the pair was also found in
 # Europe, and if so, whether it interacted:
 
-output = DataFrame(; from=String[], to=String[], score=Float64[], pair=Bool[], int=Bool[])
-for int in interactions(P)
-    pair = (int.from in species(M)) & (int.to in species(M))
-    mint = pair ? M[int.from, int.to] : false
-    push!(output, (int.from, int.to, int.probability, pair, mint))
+output = DataFrame(; from=String[], to=String[], N=Float64[], U=Float64[], pair=Bool[], int=Bool[])
+for sp1 in species(Pn)
+    for sp2 in species(Pn)
+        pair = (sp1 in species(M)) & (sp2 in species(M))
+        mint = pair ? M[sp1, sp2] : false
+        N = Pn[sp1, sp2]
+        U = Pu[sp1, sp2]
+        push!(output, (sp1, sp2, N, U, pair, mint))
+    end
 end
-sort!(output, [:score, :from, :to]; rev=[true, false, false])
+sort!(output, [:U, :from, :to]; rev=[true, false, false])
+
+# Plot the network with the uniform and normal distributions:
+
+h2d1 = histogram2d(output.N, output.U, bins=50, xlim=(0,1), ylim=(0,1), clim=(0, 2500), aspectratio=1)
+xaxis!(h2d1, "Normal model")
+yaxis!(h2d1, "Uniform model")
+savefig("figures/uniform_normal_comparison.png")
 
 # Save the basic network (no corrections)
 
+rename!(output, :U => :score)
+rename!(output, :N => :score_normal)
 CSV.write("artifacts/canadian_uncorrected.csv", output)
 
 # ## Exploration of the relationship between subspaces and network properties
 
-kout = degree(P; dims=1)
-kin = degree(P; dims=2)
+kout = degree(Pu; dims=1)
+kin = degree(Pu; dims=2)
 ordered_sp = replace.(canadian_rec.tipNames, "_" => " ")
 
 scatter(
-    𝓁[:, 1], [kout[s] / richness(P) for s in ordered_sp]; dpi=600, size=(500, 500), lab=""
+    𝓁[:, 1], [kout[s] / richness(Pu) for s in ordered_sp]; dpi=600, size=(500, 500), lab=""
 )
 xaxis!("Position in the left subspace", extrema(vcat(𝓇', 𝓁)))
 yaxis!("Probabilistic generality", (0, 1))
@@ -406,7 +451,7 @@ savefig("figures/left-gen.png")
 
 scatter(
     𝓇'[:, 1],
-    [kin[s] / richness(P) for s in ordered_sp];
+    [kin[s] / richness(Pu) for s in ordered_sp];
     dpi=600,
     size=(500, 500),
     lab="",
@@ -426,8 +471,8 @@ savefig("figures/right-vuln.png")
 # European metaweb using the simulation results, and whether to apply this step
 # at all can be considered on a case by case basis.
 
-N = copy(P)
-shared_species = filter(s -> s in species(M), species(P))
+N = copy(Pu)
+shared_species = filter(s -> s in species(M), species(Pu))
 for s1 in shared_species
     for s2 in shared_species
         N[s1, s2] = M[s1, s2] ? 1.0 : 0.0
@@ -461,15 +506,14 @@ l = @layout [
 sporder = sortperm(vec(sum(adjacency(N); dims=2)))
 
 plot(
-    plot(; legend=false, axes=false, frame=:none),
-    heatmap(𝓇[:, sporder]; frame=:none, legend=false, c=:BrBG, clim=(-1, 1)),
-    heatmap(𝓁[sporder, :]; frame=:none, legend=false, c=:PRGn, clim=(-1, 1)),
-    heatmap(adjacency(N)[sporder, sporder]; c=:Greys, frame=:none, legend=false);
+    plot(; frame=:none),
+    heatmap(𝓇[:, sporder]; frame=:box, ticks=false, axes=false, legend=false, c=:BrBG, clim=(-1, 1)),
+    heatmap(𝓁[sporder, :]; frame=:box, ticks=false, axes=false, legend=false, c=:PRGn, clim=(-1, 1)),
+    heatmap(adjacency(N)[sporder, sporder]; c=:Greys, frame=:box, ticks=false, axes=false, legend=false);
     layout=l,
     size=(500, 500),
     dpi=600,
 )
-
 savefig("figures/combined-prediction.png")
 
 sporder = sortperm(vec(sum(adjacency(M); dims=2)))
@@ -481,9 +525,9 @@ l = @layout [
 
 plot(
     plot(; legend=false, axes=false, frame=:none),
-    heatmap(R[:, sporder]; frame=:none, legend=false, c=:BrBG, clim=(-1, 1)),
-    heatmap(L[sporder, :]; frame=:none, legend=false, c=:PRGn, clim=(-1, 1)),
-    heatmap(adjacency(M)[sporder, sporder]; c=:Greys, frame=:none, legend=false);
+    heatmap(R[:, sporder]; frame=:box, ticks=false, axes=false, legend=false, c=:BrBG, clim=(-1, 1)),
+    heatmap(L[sporder, :]; frame=:box, ticks=false, axes=false, legend=false, c=:PRGn, clim=(-1, 1)),
+    heatmap(adjacency(M)[sporder, sporder]; c=:Greys, frame=:box, ticks=false, axes=false, legend=false);
     layout=l,
     size=(500, 500),
     dpi=600,
@@ -492,11 +536,11 @@ plot(
 savefig("figures/combined-empirical.png")
 
 # MaxEnt configuration model
-a = zeros(Float64, size(adjacency(P)))
-C = UnipartiteProbabilisticNetwork(a, EcologicalNetworks._species_objects(P)...)
+a = zeros(Float64, size(adjacency(Pu)))
+C = UnipartiteProbabilisticNetwork(a, EcologicalNetworks._species_objects(Pu)...)
 
-for s1 in species(P; dims=1), s2 in species(P; dims=2)
-    C[s1, s2] = 0.5(kout[s1] / richness(P) + kin[s2] / richness(P))
+for s1 in species(Pu; dims=1), s2 in species(Pu; dims=2)
+    C[s1, s2] = 0.5(kout[s1] / richness(Pu) + kin[s2] / richness(Pu))
 end
 
 rec = 𝓁[:, 1] * hcat(𝓇'[:, 1]...)
