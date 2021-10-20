@@ -369,7 +369,7 @@ h1 = heatmap(
     aspectratio=1,
     xlim=(1, richness(Pn)),
     ylim=(1, richness(Pn)),
-    title="Canadian metawen (Normal)"
+    title="Canadian metaweb (Normal)"
 )
 
 sporder = sortperm(vec(sum(adjacency(Pu); dims=2)))
