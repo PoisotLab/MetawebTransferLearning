@@ -432,7 +432,8 @@ savefig("figures/uniform_normal_comparison.png")
 
 # Save the basic network (no corrections)
 
-rename!(output, :U => :score)
+output.score = output.U
+rename!(output, :U => :score_uniform)
 rename!(output, :N => :score_normal)
 CSV.write("artifacts/canadian_uncorrected.csv", output)
 
