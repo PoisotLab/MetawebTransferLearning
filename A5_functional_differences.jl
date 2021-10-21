@@ -18,10 +18,16 @@ end
 
 Mij = DataFrame(CSV.File("artifacts/canadian_thresholded.csv"))
 Si = unique(vcat(Mij.from, Mij.to))
-
 CAN = UnipartiteProbabilisticNetwork(zeros(Float64, (length(Si), length(Si))), Si)
 for int in eachrow(Mij)
     CAN[int.from, int.to] = int.score
+end
+
+Mij = DataFrame(CSV.File("artifacts/all_mean_subset.csv"))
+Si = unique(vcat(Mij.from, Mij.to))
+ALL = UnipartiteNetwork(zeros(Bool, (length(Si), length(Si))), Si)
+for int in eachrow(Mij)
+    ALL[int.from, int.to] = true
 end
 
 # Sub-sample
@@ -33,6 +39,14 @@ EURs = [
     simplify(nodiagonal(EUR[sample(species(EUR), rand(30:70); replace=false)])) for
     i in 1:400
 ]
+ALLs = [
+    simplify(nodiagonal(ALL[sample(species(ALL), rand(30:70); replace=false)])) for
+    i in 1:400
+]
+
+filter!(n -> (richness(n)>3)&(links(n)>3), CANs)
+filter!(n -> (richness(n)>3)&(links(n)>3), EURs)
+filter!(n -> (richness(n)>3)&(links(n)>3), ALLs)
 
 # Functions
 function tib(n)
@@ -47,9 +61,10 @@ end
 # Get vec
 function pvec(N::UnipartiteNetwork)
     try
+        tl = collect(values(trophic_level(N)))
         return [
-            mean(collect(values(trophic_level(N)))),
-            std(collect(values(trophic_level(N)))),
+            mean(tl),
+            std(tl),
             std(collect(values(degree(N)))),
             std(collect(values(degree(N; dims=1)))),
             std(collect(values(degree(N; dims=2)))),
@@ -66,15 +81,20 @@ pvec(N::UnipartiteProbabilisticNetwork) = pvec(rand(N))
 
 EURv = hcat(pvec.(EURs)...)
 CANv = hcat(pvec.(CANs)...)
+ALLv = hcat(pvec.(ALLs)...)
+
+Y = hcat(CANv, EURv, ALLv)
+ny = size(Y, 2)
 
 # PCA
 
 W = fit(
-    PCA, hcat(CANv, EURv)[:, sample(1:(size(EURv, 2) + size(CANv, 2)), 300; replace=false)]
+    PCA, Y[:, sample(1:ny, 300; replace=false)]
 )
 
 PCAe = MultivariateStats.transform(W, EURv)
 PCAc = MultivariateStats.transform(W, CANv)
+PCAa = MultivariateStats.transform(W, ALLv)
 
 function ellipse(xy)
     μ = mean(xy; dims=2)
@@ -94,7 +114,7 @@ plot(; frame=:origin, dpi=600, size=(500, 500), legend=:bottomleft)
 plot!(ellipse(PCAe[1:2, :]); lw=2.5, alpha=0.05, c=:orange, lc=:orange, lab="")
 scatter!(PCAe[1, :], PCAe[2, :]; c=:orange, msw=0.0, ms=2, lab="European sub-samples")
 plot!(ellipse(PCAc[1:2, :]); lw=2.5, alpha=0.05, c=:teal, lc=:teal, lab="")
-scatter!(PCAc[1, :], PCAe[2, :]; c=:teal, msw=0.0, ms=2, lab="Canadian sub-samples")
+scatter!(PCAc[1, :], PCAc[2, :]; c=:teal, msw=0.0, ms=2, lab="Canadian sub-samples")
 xaxis!("Princ. Comp. 1 ($(round(Int, (W.prinvars[1]/W.tvar)*100))%)")
 yaxis!("Princ. Comp. 2 ($(round(Int, (W.prinvars[2]/W.tvar)*100))%)")
 savefig(joinpath("figures", "supplementary", "variation_pca.png"))
@@ -102,7 +122,7 @@ savefig(joinpath("figures", "supplementary", "variation_pca.png"))
 res = DataFrame(;
     var=["meanTL", "stdTL", "stdK", "stdKout", "stdKin", "T", "I", "B"],
     pc1=W.proj[:, 1],
-    pc2=W.proj[:, 2],
+    pc2=W.proj[:, 2]
 )
 sort!(res, :pc1)
 CSV.write("artifacts/supplementary_pca.csv")

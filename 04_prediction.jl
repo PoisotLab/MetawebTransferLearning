@@ -266,6 +266,26 @@ for coord in 1:size(L, 2)
     end
 end
 
+# We will do a little trick here, mostly for the supp mat on functional
+# differences. Pay no attention to this part.
+
+all_mammals_traits = filter(t -> !ismissing(t.tipNames), imputedtraits)
+
+ALn = Array(all_mammals_traits[!, leftnames .* "_Uniform"])
+ARn = Array(all_mammals_traits[!, rightnames .* "_Uniform"])
+
+Al = mean.(ALn)
+Ar = mean.(ARn)'
+
+AN = Al * Ar
+
+all_int = interactions(simplify(UnipartiteNetwork(AN .>= 0.206)))
+all_net = DataFrame(from=String[], to=String[])
+for r in all_int
+    push!(all_net, (r.from, r.to))
+end
+CSV.write("artifacts/all_mean_subset.csv", all_net)
+
 # When the loop is done, we extract the values for the species in the Canadian
 # species pool:
 

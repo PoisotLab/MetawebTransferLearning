@@ -28,7 +28,7 @@ end
 
 ℒ, ℛ = rdpg(M, 12)
 
-drop_at = 10:10:(links(M)-1)
+drop_at = 10:250:(links(M)-1)
 drop_auc = zeros(Float64, length(drop_at))
 drop_acc = zeros(Float64, length(drop_at))
 drop_racc = zeros(Float64, length(drop_at))
