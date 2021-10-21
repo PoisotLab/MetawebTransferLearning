@@ -10,7 +10,7 @@ using SparseArrays
 using Statistics
 
 theme(:mute)
-default(; frame=:box, aspectratio=1, dpi=600)
+default(; frame=:box, aspectratio=1, dpi=600, size=(500, 500))
 Random.seed!(01189998819991197253)
 
 suppfig = joinpath("figures", "supplementary")
@@ -27,8 +27,6 @@ M = UnipartiteNetwork(zeros(Bool, length(mwspecies), length(mwspecies)), mwspeci
 for i in 1:size(eurometa, 1)
     M[eurometa[i, :]...] = true
 end
-
-ℒ, ℛ = rdpg(M, 12)
 
 function threshold_network(predicted::Matrix{Float64}, observed::Matrix{Bool})
     thresholds = LinRange(extrema(predicted)..., size(predicted, 1))
@@ -194,3 +192,36 @@ hline!([motifratio(M)], ls=:dash, c=:grey, lab="")
 xaxis!("Interactions changed", (0, 1))
 yaxis!("Competition type ratio", (0,1))
 savefig(joinpath(suppfig, "sensibility_motifs.png"))
+
+# What if we use a subset of the network to estimate the threshold? - Part 2 of the supp mat
+
+species_used = 20:10:richness(M)
+
+ind_results = []
+
+for n in species_used
+    nodes_kept = sample(species(M), n; replace=false)
+    m = M[nodes_kept]
+    t = threshold_network(prod(rdpg(m,12)), adjacency(m))
+    prediction = prod(rdpg(M, 12)) .>= t.τ
+    observed = adjacency(M)
+    tp = sum((observed) .& (prediction)) / sum(observed)
+    tn = sum((.!(observed)) .& (.!(prediction))) / sum(.!(observed))
+    fp = sum((.!(observed)) .& (prediction)) / sum(.!(observed))
+    fn = sum((observed) .& (.!(prediction))) / sum(observed)
+    J = (tp ./ (tp .+ fn)) + (tn ./ (tn .+ fp)) .- 1.0;
+    push!(ind_results, (changed=n, thr=t.τ, tp=tp, fp=fp, tn=tn, fn=fn, J=J))
+end
+
+p1 = scatter(species_used./richness(M), [r.tp for r in ind_results], lab="", c=:darkgrey, msw=0.0, ylab="True positives")
+p2 = scatter(species_used./richness(M), [r.tn for r in ind_results], lab="", c=:darkgrey, msw=0.0, ylab="True negatives")
+p3 = scatter(species_used./richness(M), [r.fp for r in ind_results], lab="", c=:darkgrey, msw=0.0, ylab="False positives")
+p4 = scatter(species_used./richness(M), [r.fn for r in ind_results], lab="", c=:darkgrey, msw=0.0, ylab="False negatives")
+
+for p in [p1, p2, p3, p4]
+    xaxis!(p, (0, 1), "Relative richness")
+    yaxis!((0, 1))
+end
+
+plot(p1, p2, p3, p4)
+savefig(joinpath(suppfig, "sensibility_species.png"))
