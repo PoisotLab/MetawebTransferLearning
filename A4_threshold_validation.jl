@@ -7,6 +7,7 @@ using StatsBase
 using ProgressMeter
 using Random
 using SparseArrays
+using Statistics
 
 theme(:mute)
 default(; frame=:box, aspectratio=1, dpi=600)
@@ -28,8 +29,6 @@ for i in 1:size(eurometa, 1)
 end
 
 ℒ, ℛ = rdpg(M, 12)
-
-links_changed = 10:250:(links(M)-1)
 
 function threshold_network(predicted::Matrix{Float64}, observed::Matrix{Bool})
     thresholds = LinRange(extrema(predicted)..., size(predicted, 1))
@@ -74,14 +73,18 @@ function add_interactions(network, n)
 end
 
 
+links_changed = 100:100:(round(Int, 2342/100)*100)
+
 add_results = []
 rem_results = []
+mix_results = []
+
 for n in links_changed
     m = add_interactions(M, n)
     t = threshold_network(prod(rdpg(m,12)), adjacency(M))
     rm = UnipartiteNetwork(prod(rdpg(m, 12)) .>= t.τ, species(m))
     detected = count(isnothing, indexin(setdiff(interactions(m), interactions(M)), interactions(rm)))
-    push!(add_results, merge(t, (detected=detected, changed=n)))
+    push!(add_results, merge(t, (detected=detected, changed=n, network=rm)))
 end
 
 for n in links_changed
@@ -89,9 +92,18 @@ for n in links_changed
     t = threshold_network(prod(rdpg(m,12)), adjacency(M))
     rm = UnipartiteNetwork(prod(rdpg(m, 12)) .>= t.τ, species(m))
     detected = count(!isnothing, indexin(setdiff(interactions(M), interactions(m)), interactions(rm)))
-    push!(rem_results, merge(t, (detected=detected, changed=n)))
+    push!(rem_results, merge(t, (detected=detected, changed=n, network=rm)))
 end
 
+for n in links_changed
+    m1 = drop_interactions(M, round(Int, n/2))
+    m = add_interactions(m1, round(Int, n/2))
+    t = threshold_network(prod(rdpg(m,12)), adjacency(M))
+    rm = UnipartiteNetwork(prod(rdpg(m, 12)) .>= t.τ, species(m))
+    detected_add = count(isnothing, indexin(setdiff(interactions(m), interactions(M)), interactions(rm)))
+    detected_rem = count(!isnothing, indexin(setdiff(interactions(M), interactions(m)), interactions(rm)))
+    push!(mix_results, merge(t, (detected=detected_add+detected_rem, changed=n, network=rm)))
+end
 
 plot([0, 1, 1, 0], [0, 0, 0.5, 0.5], st=:shape, c=:grey, alpha=0.1, lw=0.0, aspectratio=1, legend=:bottomright, lab="")
 annotate!(0.05, 0.25, text("Worse than random", :black, :left, 8))
@@ -100,17 +112,19 @@ annotate!(0.05, 0.5+1/12, text("Close to random", :red, :left, 8))
 plot!([0, 1, 1, 0], [0.5+1/6, 0.5+1/6, 0.5+2/6, 0.5+2/6], st=:shape, c=:orange, alpha=0.1, lw=0.0, lab="")
 annotate!(0.05, 0.5+3/12, text("Fair classifier", :orange, :left, 8))
 plot!([0, 1, 1, 0], [0.5+2/6, 0.5+2/6, 1.0, 1.0], st=:shape, c=:green, alpha=0.1, lw=0.0, lab="")
-annotate!(0.95, 0.5+5/12, text("Excellent classifier", :green, :right, 8))
-scatter!(links_changed./links(M), [r.AUC for r in add_results], lab="Added links", msw=1.0, c=:white)
-scatter!(links_changed./links(M), [r.AUC for r in rem_results], lab="Removed links", msw=1.0, c=:white, m=:diamond)
+annotate!(0.05, 0.5+5/12, text("Excellent class.", :green, :left, 8))
+scatter!(links_changed./links(M), [r.AUC for r in add_results], lab="Added", msw=1.0, c=:darkgrey, m=:utriangle)
+scatter!(links_changed./links(M), [r.AUC for r in mix_results], lab="Both", msw=1.0, c=:white, m=:circle)
+scatter!(links_changed./links(M), [r.AUC for r in rem_results], lab="Removed", msw=1.0, c=:lightgrey, m=:dtriangle)
 xaxis!("Interactions changed", (0, 1))
 yaxis!("ROC-AUC", (0,1))
 savefig(joinpath(suppfig, "sensibility_rocauc.png"))
 
 plot([0, 1, 1, 0], [0, 0, 0.5, 0.5], st=:shape, c=:grey, alpha=0.2, lw=0.0, aspectratio=1, lab="", legend=:bottomright)
 annotate!(0.05, 0.25, text("Worse than random", :black, :left, 8))
-scatter!(links_changed./links(M), [r.accuracy for r in add_results], lab="Added links", msw=1.0, c=:white)
-scatter!(links_changed./links(M), [r.accuracy for r in rem_results], lab="Removed links", msw=1.0, c=:white, m=:diamond)
+scatter!(links_changed./links(M), [r.accuracy for r in add_results], lab="Added", msw=1.0, c=:darkgrey, m=:utriangle)
+scatter!(links_changed./links(M), [r.accuracy for r in mix_results], lab="Both", msw=1.0, c=:white, m=:circle)
+scatter!(links_changed./links(M), [r.accuracy for r in rem_results], lab="Removed", msw=1.0, c=:lightgrey, m=:dtriangle)
 annotate!(0.05, 0.75, text("Better than random", :black, :left, 8))
 xaxis!("Interactions changed", (0, 1))
 yaxis!("Accuracy", (0,1))
@@ -125,40 +139,58 @@ annotate!(0.05, 0.5, text("Moderate agreement", :black, :left, 8))
 plot!([0, 1, 1, 0], [0.6, 0.6, 0.8, 0.8], st=:shape, c=:grey, alpha=0.2, lw=0.0, lab="")
 annotate!(0.05, 0.7, text("Good agreement", :black, :left, 8))
 annotate!(0.95, 0.9, text("Very good agreement", :black, :right, 8))
-scatter!(links_changed./links(M), [r.κ for r in add_results], lab="Added links", msw=1.0, c=:white)
-scatter!(links_changed./links(M), [r.κ for r in rem_results], lab="Removed links", msw=1.0, c=:white, m=:diamond)
+scatter!(links_changed./links(M), [r.κ for r in add_results], lab="Added", msw=1.0, c=:darkgrey, m=:utriangle)
+scatter!(links_changed./links(M), [r.κ for r in mix_results], lab="Both", msw=1.0, c=:white, m=:circle)
+scatter!(links_changed./links(M), [r.κ for r in rem_results], lab="Removed", msw=1.0, c=:lightgrey, m=:dtriangle)
 xaxis!("Interactions changed", (0, 1))
 yaxis!("Cohen's κ", (0,1))
 savefig(joinpath(suppfig, "sensibility_kappa.png"))
 
-scatter(links_changed./links(M), [r.τ for r in add_results], lab="Added links", msw=1.0, c=:white)
-scatter!(links_changed./links(M), [r.τ for r in rem_results], lab="Removed links", msw=1.0, c=:white, m=:diamond)
+scatter(links_changed./links(M), [r.τ for r in add_results], lab="Added", msw=1.0, c=:darkgrey, m=:utriangle)
+scatter!(links_changed./links(M), [r.τ for r in mix_results], lab="Both", msw=1.0, c=:white, m=:circle)
+scatter!(links_changed./links(M), [r.τ for r in rem_results], lab="Removed", msw=1.0, c=:lightgrey, m=:dtriangle)
 hline!([0.206], ls=:dash, c=:grey, lab="")
 xaxis!("Interactions changed", (0, 1))
 yaxis!("Best threshold", (0,1))
 savefig(joinpath(suppfig, "sensibility_threshold.png"))
 
-scatter(links_changed./links(M), [r.detected/r.changed for r in add_results], lab="Added links", msw=1.0, c=:white, legend=:bottomleft)
-scatter!(links_changed./links(M), [r.detected/r.changed for r in rem_results], lab="Removed links", msw=1.0, c=:white, m=:diamond)
+scatter(links_changed./links(M), [r.detected/r.changed for r in add_results], lab="Added", msw=1.0, c=:darkgrey, m=:utriangle, legend=:bottomleft)
+scatter!(links_changed./links(M), [r.detected/r.changed for r in mix_results], lab="Both", msw=1.0, c=:white, m=:circle)
+scatter!(links_changed./links(M), [r.detected/r.changed for r in rem_results], lab="Removed", msw=1.0, c=:lightgrey, m=:dtriangle)
 xaxis!("Interactions changed", (0, 1))
-yaxis!("Interactions recovered", (0,1))
+yaxis!("Changes corrected", (0,1))
 savefig(joinpath(suppfig, "sensibility_recovery.png"))
 
-scatter(drop_at./links(M), drop_co, leg=false, msw=0.0, ms=3, c=:black, aspectratio=1)
-hline!([connectance(M)], ls=:dash, c=:grey)
-xaxis!("Interactions withheld", (0, 1))
+scatter(links_changed./links(M), [connectance(r.network) for r in add_results], lab="Added", msw=1.0, c=:darkgrey, m=:utriangle, legend=:topright)
+scatter!(links_changed./links(M), [connectance(r.network) for r in mix_results], lab="Both", msw=1.0, c=:white, m=:circle)
+scatter!(links_changed./links(M), [connectance(r.network) for r in rem_results], lab="Removed", msw=1.0, c=:lightgrey, m=:dtriangle)
+hline!([connectance(M)], ls=:dash, c=:grey, lab="")
+xaxis!("Interactions changed", (0, 1))
 yaxis!("Connectance", (0,1))
 savefig(joinpath(suppfig, "sensibility_connectance.png"))
 
-scatter(drop_at./links(M), drop_rho, leg=false, msw=0.0, ms=3, c=:black, aspectratio=1)
-hline!([ρ(M)], ls=:dash, c=:grey)
-xaxis!("Interactions withheld", (0, 1))
+scatter(links_changed./links(M), [ρ(r.network) for r in add_results], lab="Added", msw=1.0, c=:darkgrey, m=:utriangle, legend=:topright)
+scatter!(links_changed./links(M), [ρ(r.network) for r in mix_results], lab="Both", msw=1.0, c=:white, m=:circle)
+scatter!(links_changed./links(M), [ρ(r.network) for r in rem_results], lab="Removed", msw=1.0, c=:lightgrey, m=:dtriangle)
+hline!([ρ(M)], ls=:dash, c=:grey, lab="")
+xaxis!("Interactions changed", (0, 1))
 yaxis!("Spectral radius", (0,1))
 savefig(joinpath(suppfig, "sensibility_spectralradius.png"))
 
-scatter(drop_at./links(M), drop_s4./drop_s5, leg=false, msw=0.0, ms=3, c=:black, aspectratio=1)
-s_ratio = length(find_motif(M, unipartitemotifs()[:S4])) / length(find_motif(M, unipartitemotifs()[:S5]))
-hline!([s_ratio], ls=:dash, c=:grey)
-xaxis!("Interactions withheld", (0, 1))
+m1, m2 = unipartitemotifs()[:S4], unipartitemotifs()[:S5]
+
+function motifratio(network, m1, m2)
+    return length(find_motif(network, m1)) / length(find_motif(network, m2))
+end
+
+function motifratio(network)
+    return motifratio(network, m1, m2)
+end
+
+scatter(links_changed./links(M), [motifratio(r.network) for r in add_results], lab="Added", msw=1.0, c=:darkgrey, m=:utriangle, legend=:topright)
+scatter!(links_changed./links(M), [motifratio(r.network) for r in mix_results], lab="Both", msw=1.0, c=:white, m=:circle)
+scatter!(links_changed./links(M), [motifratio(r.network) for r in rem_results], lab="Removed", msw=1.0, c=:lightgrey, m=:dtriangle)
+hline!([motifratio(M)], ls=:dash, c=:grey, lab="")
+xaxis!("Interactions changed", (0, 1))
 yaxis!("Competition type ratio", (0,1))
 savefig(joinpath(suppfig, "sensibility_motifs.png"))
