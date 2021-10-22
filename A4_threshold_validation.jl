@@ -195,16 +195,17 @@ savefig(joinpath(suppfig, "sensibility_motifs.png"))
 
 # What if we use a subset of the network to estimate the threshold? - Part 2 of the supp mat
 
-species_used = 20:10:richness(M)
+species_used = repeat(24:12:(richness(M)-24), 30)
 
 ind_results = []
 
 for n in species_used
     nodes_kept = sample(species(M), n; replace=false)
+    test_set = setdiff(species(M), nodes_kept)
     m = M[nodes_kept]
     t = threshold_network(prod(rdpg(m,12)), adjacency(m))
-    prediction = prod(rdpg(M, 12)) .>= t.τ
-    observed = adjacency(M)
+    prediction = prod(rdpg(M[test_set], 12)) .>= t.τ
+    observed = adjacency(M[test_set])
     tp = sum((observed) .& (prediction)) / sum(observed)
     tn = sum((.!(observed)) .& (.!(prediction))) / sum(.!(observed))
     fp = sum((.!(observed)) .& (prediction)) / sum(.!(observed))
@@ -225,3 +226,15 @@ end
 
 plot(p1, p2, p3, p4)
 savefig(joinpath(suppfig, "sensibility_species.png"))
+
+
+thr = DataFrame(ind_results)
+
+gdf = groupby(thr, :changed)
+summ = combine(gdf, :thr => mean => :μ, :thr => std => :σ)
+
+scatter(summ.changed./richness(M), summ.μ, ribbon=summ.σ, lab="", c=:darkgrey, msw=0.0, ylab="Estimated threshold")
+hline!([0.206], ls=:dash, c=:grey, lab="")
+xaxis!((0, 1), "Relative richness")
+yaxis!((0,1))
+savefig(joinpath(suppfig, "sensibility_threshold_species.png"))
